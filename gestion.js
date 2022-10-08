@@ -8,6 +8,7 @@ var turno =
     email,
     branchId
 }
+ 
 
 
 class Turno {
