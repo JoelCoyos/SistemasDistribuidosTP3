@@ -9,7 +9,7 @@ var turno =
     branchId
 }
  
-
+//comentario de prueba
 
 class Turno {
     constructor(id, dateTime, userId, email, branchId) {
