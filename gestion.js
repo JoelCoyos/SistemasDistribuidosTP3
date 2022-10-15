@@ -1,16 +1,3 @@
-var turnos = [];
-
-var turno =
-{
-    id,
-    dateTime,
-    userId,
-    email,
-    branchId
-}
- 
-//comentario de prueba
-
 class Turno {
     constructor(id, dateTime, userId, email, branchId) {
         this.id = id;
@@ -21,33 +8,46 @@ class Turno {
     }
 }
 
-let turno1 = new turno(1,new Date(2022,10,8,15,0),1,"usuario1@gmail.com",1)
-let turno2 = new turno(2,new Date(2022,10,9,19,30),1,"usuario2@gmail.com",2)
+let turno1 = new Turno(1,new Date(2022,10,8,15,0),1,"usuario1@gmail.com",1)
+let turno2 = new Turno(2,new Date(2022,10,9,19,30),1,"usuario2@gmail.com",2)
 
-import { createServer } from 'http';
+const http = require('http');
 
-const server = createServer((request, response) => {
-
-});
-
-server.on('request', (request, response) => {
-
-});
+http.createServer((request, response) => {
+  const { headers, method, url } = request;
+  let body = [];
+  request.on('error', (err) => {
+    console.error(err);
+  }).on('data', (chunk) => 
+  {
+    body.push(chunk);
+  }).on('end', () => 
+  {
+    //No hay mas datos
+    console.log(body.toString());
+    if(request.method === 'POST')
+        alta();
+    else if(request.method === 'PUT')
+        modificacion();
+    else if(request.method === 'DELETE')
+        baja();
+  });
+}).listen(8080);
 
 //Joel
-function alta(date,userId,email,branch) 
+function alta(datos) 
 {
     
 }
 
 //Nahuel
-function baja(idTurno) 
+function baja(datos) 
 {
     
 }
 
 //Agustin
-function modificacion(idTurno,newDate) 
+function modificacion(datos) 
 {
     
 }
