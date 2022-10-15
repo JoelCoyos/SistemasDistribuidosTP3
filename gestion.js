@@ -1,7 +1,6 @@
 const http = require('http');
 const PORT = 8080
 const fs = require('fs');
-const { setDefaultResultOrder } = require('dns');
 
 class Turno {
     constructor(nroTurno, newReserva) {
@@ -26,13 +25,14 @@ http.createServer((request, response) =>  {
   }).on('end', async () => 
   {
     //No hay mas datos
-
-    if(request.method === 'POST')
-        msg = await alta(body)
-    else if(request.method === 'PUT')
-        modificacion(body)
-    else if(request.method === 'DELETE')
-        baja(body)
+    console.log("---------------------------------------------------------")
+    if(request.method === 'POST'){
+      msg = await alta(body)
+    } else if(request.method === 'PUT'){
+      msg = await modificacion(body)
+    } else if(request.method === 'DELETE'){
+      msg = await baja(body)
+    }
 
     response.end(msg);
   });
@@ -43,11 +43,17 @@ function newId(reservas){
 }
 
 function existe(reservas, newReserva){
-  //const filteredRecords = reservas.filter(reservas => {reservas.date == newReserva.date && reservas.branchId == newReserva.branchId} )
   let filteredRecords = reservas.filter(function (currentElement) {
     return currentElement.date == newReserva.date && currentElement.branchId == newReserva.branchId;
   });
   return filteredRecords.length == 0
+}
+
+function borra(reservas, reservaDelete){
+  let filteredRecords = reservas.filter(function (currentElement) {
+    return currentElement.date != reservaDelete.date || currentElement.branchId != reservaDelete.branchId;
+  });
+  return filteredRecords
 }
 
 async function alta(datos) 
@@ -62,7 +68,7 @@ async function alta(datos)
   let newReserva = JSON.parse(datos)
   let nroTurno = 1
   
-  if(data.length == 0){
+  if(data.length <= 2){
     var reservas = []
   } else {
     var reservas = JSON.parse(data);
@@ -72,7 +78,6 @@ async function alta(datos)
   if(existe(reservas,newReserva)){
     let turno = new Turno(nroTurno, newReserva)
     reservas.push(turno);
-
 
     var updateReservas = JSON.stringify(reservas);
     console.log(reservas)
@@ -91,16 +96,38 @@ async function alta(datos)
 }
 
 //Agustin
-function baja(datos) 
-{
-  sol = JSON.parse(datos)
-
+function baja(datos) {
+  try{
+    var data = fs.readFileSync("reservas.json");
+  } catch(err){
+    fs.openSync("reservas.json", 'w')
+    return "no existe el JSON, no se puede eliminar nada"
+  }
   
+  if(data.length > 2){
+    let reservaDelete = JSON.parse(datos)
+    var reservas = JSON.parse(data);
+    let reservasAuxiliar = borra(reservas,reservaDelete)
+
+    if(reservas == reservasAuxiliar){
+      console.log(reservas)
+      return "No existe el turno que se quiere eliminar"
+    } else {
+      var updateReservas = JSON.stringify(reservasAuxiliar);
+      console.log(reservasAuxiliar)
+      
+      fs.writeFile("reservas.json", updateReservas, (err) => {
+        if (err) return "todo mal";
+      });
+      return "eliminado con exito"
+    }
+  } else {
+    return "el JSON esta vacio"
+  }
 }
 
 //Joel
-function modificacion(datos) 
-{
+function modificacion(datos) {
   sol = JSON.parse(datos)
 
   
