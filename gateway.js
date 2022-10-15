@@ -26,5 +26,5 @@ const req = http.request(options, (res) => {
     });
 });
 
-req.write(data);
+req.write(JSON.stringify(data));
 req.end();
