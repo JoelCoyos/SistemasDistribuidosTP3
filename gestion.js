@@ -1,20 +1,19 @@
 const http = require('http');
 const PORT = 8080
-
-//let turno1 = new Turno(1,new Date(2022,10,8,15,0),1,"usuario1@gmail.com",1)
-//let turno2 = new Turno(2,new Date(2022,10,9,19,30),1,"usuario2@gmail.com",2)
+const fs = require('fs');
+const { setDefaultResultOrder } = require('dns');
 
 class Turno {
-    constructor(id, dateTime, userId, email, branchId) {
-        this.id = id;
-        this.dateTime = dateTime;
-        this.userId = userId;
-        this.email = email;
-        this.branchId = branchId;
+    constructor(nroTurno, newReserva) {
+        this.idTurno = nroTurno;
+        this.date = newReserva.date;
+        this.userId = newReserva.userId;
+        this.email = newReserva.email;
+        this.branchId = newReserva.branchId;
     }
 }
 
-http.createServer((request, response) => {
+http.createServer((request, response) =>  {
   const { headers, method, url } = request;
   let body = [];
 
@@ -24,48 +23,85 @@ http.createServer((request, response) => {
   {
     body.push(chunk);
 
-  }).on('end', () => 
+  }).on('end', async () => 
   {
     //No hay mas datos
-    console.log(body.toString());
-
 
     if(request.method === 'POST')
-        alta(body)
+        msg = await alta(body)
     else if(request.method === 'PUT')
         modificacion(body)
     else if(request.method === 'DELETE')
         baja(body)
+
+    response.end(msg);
   });
 }).listen(PORT);
 
-//Joel
-function alta(datos) 
-{
-  sol = JSON.parse(body)
-  
-  console.log("alta")
-  console.log("fecha:",sol.fecha) 
-  console.log("userId:",sol.userId)
-  console.log("email:",sol.email)
-  console.log("branchId:",sol.branchId)
+function newId(reservas){
+  return reservas[reservas.length-1].idTurno + 1
 }
 
-//Nahuel
-function baja(datos) 
-{
-  sol = JSON.parse(body)
+function existe(reservas, newReserva){
+  //const filteredRecords = reservas.filter(reservas => {reservas.date == newReserva.date && reservas.branchId == newReserva.branchId} )
+  let filteredRecords = reservas.filter(function (currentElement) {
+    return currentElement.date == newReserva.date && currentElement.branchId == newReserva.branchId;
+  });
+  return filteredRecords.length == 0
+}
 
-  console.log("baja")
-  console.log("idTurno:",idTurno) 
+async function alta(datos) 
+{ 
+  try{
+    var data = fs.readFileSync("reservas.json");
+  } catch(err){
+    fs.openSync("reservas.json", 'w')
+    data = []
+  }
+  
+  let newReserva = JSON.parse(datos)
+  let nroTurno = 1
+  
+  if(data.length == 0){
+    var reservas = []
+  } else {
+    var reservas = JSON.parse(data);
+    nroTurno = newId(reservas)
+  }
+  
+  if(existe(reservas,newReserva)){
+    let turno = new Turno(nroTurno, newReserva)
+    reservas.push(turno);
+
+
+    var updateReservas = JSON.stringify(reservas);
+    console.log(reservas)
+    
+    fs.writeFile("reservas.json", updateReservas, (err) => {
+      if (err) return "todo mal";
+    });
+
+    //nahuel
+
+    return  "todo joya"
+  } else {
+    console.log(reservas)
+    return  "repetido capo"
+  }
 }
 
 //Agustin
+function baja(datos) 
+{
+  sol = JSON.parse(datos)
+
+  
+}
+
+//Joel
 function modificacion(datos) 
 {
-  sol = JSON.parse(body)
+  sol = JSON.parse(datos)
 
-  console.log("mod")
-  console.log("idTurno:",idTurno)
-  console.log("fecha:",newDate) 
+  
 }

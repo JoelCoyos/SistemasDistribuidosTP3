@@ -1,11 +1,10 @@
 const http = require('http');
 
 var data = {
-  fecha: new Date(2022,10,8,15,0),
-  userId: 1,
-  email: "usuario1@gmail.com",
-  branchId: 15,
-  idTurno: null
+  date: new Date(2081,10,8,15,0),
+  userId: 0,
+  email: "mail@gmail.com",
+  branchId: 10
 }
 
 const options = 
@@ -18,11 +17,12 @@ const options =
 
 const req = http.request(options, (res) => {
     res.setEncoding('utf8');
+    let body = [];
     res.on('data', (chunk) => {
-      console.log(res);
+      body.push(chunk);
     });
     res.on('end', () => {
-
+      console.log(body.toString());
     });
 });
 
