@@ -1,6 +1,12 @@
 const http = require('http');
 
-const data = 'Hola mundo!';
+var data = {
+  fecha: new Date(2022,10,8,15,0),
+  userId: 1,
+  email: "usuario1@gmail.com",
+  branchId: 15,
+  idTurno: null
+}
 
 const options = 
 {
