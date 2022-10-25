@@ -2,6 +2,7 @@ const http = require('http');
 const PORT = 8080
 const fs = require('fs');
 const { setDefaultResultOrder } = require('dns');
+const url = require('url');
 
 class Turno {
     constructor(nroTurno, newReserva) {
@@ -25,12 +26,18 @@ http.createServer((request, response) =>  {
 
   }).on('end', async () => 
   {
+    msg =[]
     //No hay mas datos
-
     if(request.method === 'POST')
         msg = await alta(body)
     else if(request.method === 'PUT')
-        modificacion(body)
+    {
+      if(request.url.match(/\/api\/reservas\/\w+/))
+      {
+        const id = request.url.split('/')[3];
+        msg = await modificacion(id,request.body)
+      }
+    }
     else if(request.method === 'DELETE')
         baja(body)
 
@@ -99,9 +106,7 @@ function baja(datos)
 }
 
 //Joel
-function modificacion(datos) 
+async function modificacion(id,nuevoTurno) 
 {
-  sol = JSON.parse(datos)
-
-  
+    return 'todo joya';
 }

@@ -11,8 +11,8 @@ const options =
 {
     hostname: 'localhost',
     port: 8080,
-    path:'/',
-    method:'POST',
+    path:'/api/reservas/2',
+    method:'PUT',
 };
 
 const req = http.request(options, (res) => {
