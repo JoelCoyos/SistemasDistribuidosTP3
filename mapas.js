@@ -63,6 +63,29 @@ http.createServer((request, response) =>  {
     });
   }).listen(PORT);
 
+/* cliente (en nuestro caso seria el gateway)
 
+const http = require('http');
+
+const options = 
+{
+    hostname: 'localhost',
+    port: 8080,
+    path:'/',
+    method:'GET',
+};
+
+const req = http.request(options, (res) => {
+    res.setEncoding('utf8');
+    let body = [];
+    res.on('data', (chunk) => {
+      body.push(chunk);
+    });
+    res.on('end', () => {
+      console.log(JSON.parse(body));
+    });
+});
+
+req.end();
 
 
