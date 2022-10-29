@@ -1,17 +1,15 @@
 const http = require('http');
 
 var data = {
-  date: new Date(2081,10,8,15,0),
   userId: 0,
-  email: "mail@gmail.com",
-  branchId: 10
+  email: "juan@gmail.com"
 }
 
 const options = 
 {
     hostname: 'localhost',
     port: 8080,
-    path:'/',
+    path:'/api/reserva/2',
     method:'POST',
 };
 

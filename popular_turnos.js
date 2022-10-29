@@ -6,8 +6,8 @@ class Turno {
     constructor(idTurno,date,branchId) {
         this.idTurno = idTurno;
         this.date = date
-        this.userId = null;
-        this.email = null;
+        this.userId = -1;
+        this.email = "";
         this.branchId = branchId;
     }
 }

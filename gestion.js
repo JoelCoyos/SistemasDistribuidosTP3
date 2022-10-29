@@ -1,11 +1,12 @@
 const http = require('http');
 const PORT = 8080
 const fs = require('fs');
+const archivo = require('./archivos');
 const { setDefaultResultOrder } = require('dns');
 
 class Turno {
     constructor(nroTurno, newReserva) {
-        this.idTurno = nroTurno;
+        this.id = nroTurno;
         this.date = newReserva.date;
         this.userId = newReserva.userId;
         this.email = newReserva.email;
@@ -16,7 +17,7 @@ class Turno {
 http.createServer((request, response) =>  {
   const { headers, method, url } = request;
   let body = [];
-
+  let msg = '';
   request.on('error', (err) => {
     console.error(err);
   }).on('data', (chunk) => 
@@ -28,66 +29,50 @@ http.createServer((request, response) =>  {
     //No hay mas datos
 
     if(request.method === 'POST')
-        msg = await alta(body)
+    {
+      if(request.url.match(/\/api\/reserva\/\w+/))
+      {
+        const idTurno = request.url.split('/')[3];
+        msg = alta(idTurno,JSON.parse(body));
+      }
+    }
     else if(request.method === 'PUT')
-        modificacion(body)
-    else if(request.method === 'DELETE')
-        baja(body)
+    {
 
+    }
+    else if(request.method === 'DELETE')
+    {
+
+    }
     response.end(msg);
   });
 }).listen(PORT);
 
-function newId(reservas){
-  return reservas[reservas.length-1].idTurno + 1
-}
 
-function existe(reservas, newReserva){
-  //const filteredRecords = reservas.filter(reservas => {reservas.date == newReserva.date && reservas.branchId == newReserva.branchId} )
-  let filteredRecords = reservas.filter(function (currentElement) {
-    return currentElement.date == newReserva.date && currentElement.branchId == newReserva.branchId;
-  });
-  return filteredRecords.length == 0
-}
 
-async function alta(datos) 
+function alta(idTurno,newReserva) 
 { 
-  try{
-    var data = fs.readFileSync("reservas.json");
-  } catch(err){
-    fs.openSync("reservas.json", 'w')
-    data = []
+  let reservas = archivo.leerDatosJson("reservas.json");
+  if(libre(reservas,idTurno))
+  {
+    let reserva = reservas[idTurno];
+    reserva.userId = newReserva.userId;
+    reserva.email = newReserva.email;
+    reservas[idTurno] = reserva;
+    archivo.escribirArchivoJson("reservas.json",reservas);
+    return "todo bien"
   }
-  
-  let newReserva = JSON.parse(datos)
-  let nroTurno = 1
-  
-  if(data.length == 0){
-    var reservas = []
-  } else {
-    var reservas = JSON.parse(data);
-    nroTurno = newId(reservas)
+  else
+  {
+    return "ya esta ocupado"
   }
-  
-  if(existe(reservas,newReserva)){
-    let turno = new Turno(nroTurno, newReserva)
-    reservas.push(turno);
+}
 
-
-    var updateReservas = JSON.stringify(reservas);
-    console.log(reservas)
-    
-    fs.writeFile("reservas.json", updateReservas, (err) => {
-      if (err) return "todo mal";
-    });
-
-    //nahuel
-
-    return  "todo joya"
-  } else {
-    console.log(reservas)
-    return  "repetido capo"
-  }
+function libre(reservas, idTurno){
+  if(reservas[idTurno].userId==-1) 
+    return true;
+  else 
+    return false;
 }
 
 //Agustin
