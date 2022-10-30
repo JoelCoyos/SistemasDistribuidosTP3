@@ -11,12 +11,14 @@ function escribirArchivoJson(nombre,datos)
 function leerDatosJson(nombre)
 {
     let datosJson = [];
+    let objeto;
     try{
         datosJson = fs.readFileSync(nombre);
+        objeto = JSON.parse(datosJson);
     }catch(err){
         fs.openSync(nombre,'w');
     }
-    return datosJson;
+    return objeto;
     
 }
 
