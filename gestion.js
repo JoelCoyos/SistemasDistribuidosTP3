@@ -1,4 +1,5 @@
 const http = require('http');
+const sendEmail = require('./gestionNotificaciones');
 const PORT = 8080
 const fs = require('fs');
 const { setDefaultResultOrder } = require('dns');
@@ -81,7 +82,7 @@ async function alta(datos)
       if (err) return "todo mal";
     });
 
-    //nahuel
+    //sendEmail(datos.email,"Benvenute","Hola has reservado un turno en la peluquerio bla bla blaa.")
 
     return  "todo joya"
   } else {
