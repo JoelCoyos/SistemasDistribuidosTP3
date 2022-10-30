@@ -2,6 +2,7 @@ const http = require('http');
 const PORT = 8080
 const fs = require('fs');
 const archivo = require('./archivos');
+const urlParse = require('url');
 const { setDefaultResultOrder } = require('dns');
 
 class Turno {
@@ -36,6 +37,19 @@ http.createServer((request, response) =>  {
         msg = alta(idTurno,JSON.parse(body));
       }
     }
+    else if(request.method == 'GET')
+    {
+      if(urlParse.parse(request.url,true).pathname == '/api/reserva/') //get turnos
+      {
+        let query = urlParse.parse(request.url,true).query;
+        console.log(query.userId +' '+ query.date + ' '+ query.branchId);
+        msg = getTurnos(query.userId,query.date,query.branchId);
+      }
+      else if(request.url.match(/\/api\/reserva\/\w+/)) //Get reserva
+      {
+        msg = '';
+      }
+    }
     else if(request.method === 'PUT')
     {
 
@@ -49,6 +63,19 @@ http.createServer((request, response) =>  {
 }).listen(PORT);
 
 
+function getTurnos(userId,date,branchId)
+{
+  let turnos = [];
+  let reservas = archivo.leerDatosJson("reservas.json");
+  turnos = reservas.filter(turno => 
+    ( 
+      (userId  == undefined  || turno.userId    == userId)  && 
+      (date     == undefined || turno.date      == date)  && 
+      (branchId == undefined || turno.branchId  == branchId)
+    )
+  )
+  return JSON.stringify(turnos);
+}
 
 function alta(idTurno,newReserva) 
 { 
@@ -79,14 +106,10 @@ function libre(reservas, idTurno){
 function baja(datos) 
 {
   sol = JSON.parse(datos)
-
-  
 }
 
 //Joel
 function modificacion(datos) 
 {
   sol = JSON.parse(datos)
-
-  
 }
