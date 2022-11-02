@@ -1,49 +1,37 @@
 const http = require('http');
-const PORT = 8081;
+const { arch } = require('os');
+const PORT = 8080;
 const archivo = require('./archivos')
 
-class Sucursal{
-    constructor(id,lat,lng,name){
-        this.id=id;
-        this.lat=lat;
-        this.lng = lng;
-        this.name=name;
-    }
-}
+const urlParse = require('url');
+
+var sucursales = archivo.leerDatosJson('sucursales.json')
 
 http.createServer((request, response) =>  {
-    const { headers, method, url } = request;
-    let body = [];
-    let res = [];
-    request.on('error', (err) => {
-      console.error(err);
-    }).on('data', (chunk) => 
-    {
-      body.push(chunk);
-  
-    }).on('end', async () => 
-    {
-        if(request.method == 'GET' && request.url == '/api/sucursales')
-        {
-          res = getSucursales();
-        }
-        response.end(res);
-    });
-  }).listen(PORT);
+  const { headers, method, url } = request;
+  let body = [];
 
-  function getSucursales()
+  request.on('error', (err) => {
+    console.error(err);
+  }).on('data', (chunk) => 
   {
-    let sucursales = archivo.leerDatosJson("sucursales.json");
-    return sucursales;
-  }
-  
-
-  /*let sucursal1 = new Sucursal(1,1,1,"Sucursal 1");
-  let sucursal2 = new Sucursal(2,2,2,"Sucursal 2");
-  let sucursal3 = new Sucursal(3,3,3,"Sucursal 3");
-
-  let sucursales = [sucursal1,sucursal2,sucursal3];
-
-  archivo.escribirArchivoJson('sucursales.json',sucursales);*/
-
-
+    body.push(chunk);
+  }).on('end', async () => 
+  {
+    var msg = ''
+    if(request.method === 'GET' && request.url == '/api/sucursales'){
+      msg = JSON.stringify(sucursales)
+    }
+    else if(request.method == 'GET' && urlParse.parse(request.url,true).pathname == '/api/sucursales/')
+    {
+      let query = urlParse.parse(request.url,true).query;  
+      let i = 0
+      while(i<sucursales.length && sucursales[i].id != query.id) {i++}
+      if(i == sucursales.length) 
+        msg = JSON.stringify("No existe la sucursal")
+      else
+        msg = JSON.stringify(sucursales[i])
+    } 
+    response.end(msg);
+  });
+}).listen(PORT);
