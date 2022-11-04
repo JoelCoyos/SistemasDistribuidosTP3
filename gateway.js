@@ -17,7 +17,7 @@ const options =
 {
     hostname: 'localhost',
     port: 8080,
-    path:'/api/sucursales',
+    path:'/api/sucursales/?id=4',
     method:'GET',
 };
 

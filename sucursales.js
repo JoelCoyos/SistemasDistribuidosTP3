@@ -29,8 +29,14 @@ http.createServer((request, response) =>  {
       while(i<sucursales.length && sucursales[i].id != query.id) {i++}
       if(i == sucursales.length) 
         msg = JSON.stringify("No existe la sucursal")
-      else
-        msg = JSON.stringify(sucursales[i])
+      else{
+        const rta = {
+          lat : sucursales[i].lat,
+          lng : sucursales[i].lng,
+          name : sucursales[i].name
+        }
+        msg = JSON.stringify(rta)
+      }
     } 
     response.end(msg);
   });
