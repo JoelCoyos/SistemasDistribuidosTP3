@@ -40,10 +40,12 @@ http.createServer((request, response) =>  {
     }
     else if(request.method == 'GET')
     {
-      if(urlParse.parse(request.url,true).pathname == '/api/reserva/') //get turnos
+      if(urlParse.parse(request.url,true).pathname == '/api/reservas/') //get turnos
       {
         let query = urlParse.parse(request.url,true).query;
         console.log(query.userId +' '+ query.date + ' '+ query.branchId);
+        response.setHeader('Content-Type', 'application/json');
+        response.setHeader('Access-Control-Allow-Origin', '*');
         msg = getTurnos(query.userId,query.date,query.branchId);
       }
       else if(request.url.match(/\/api\/reserva\/\w+/)) //Get reserva
