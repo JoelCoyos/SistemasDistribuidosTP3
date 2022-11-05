@@ -17,7 +17,7 @@ const options =
 {
     hostname: 'localhost',
     port: 8080,
-    path:'/api/sucursales/?id=4',
+    path:'/api/sucursales',
     method:'GET',
 };
 
@@ -29,8 +29,13 @@ const req = http.request(options, (res) => {
       body.push(chunk);
     });
     res.on('end', () => {
-      console.log(JSON.parse(body))
-      //console.log(body.toString());
+      if(res.statusCode == 200)
+        console.log(JSON.parse(body))
+      else{
+        console.log(res.statusCode)
+        console.log(body)
+      }
+      
     });
 });
 

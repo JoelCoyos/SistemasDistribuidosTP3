@@ -26,9 +26,11 @@ http.createServer((request, response) =>  {
     {
       let query = urlParse.parse(request.url,true).query;  
       let i = 0
-      while(i<sucursales.length && sucursales[i].id != query.id) {i++}
-      if(i == sucursales.length) 
-        msg = JSON.stringify("No existe la sucursal")
+      while(i<sucursales.length && sucursales[i].branchId != query.branchId) {i++}
+      if(i == sucursales.length) {
+        msg = "No existe la sucursal"
+        response.writeHead(404,msg)
+      }
       else{
         const rta = {
           lat : sucursales[i].lat,
@@ -36,6 +38,7 @@ http.createServer((request, response) =>  {
           name : sucursales[i].name
         }
         msg = JSON.stringify(rta)
+
       }
     } 
     response.end(msg);

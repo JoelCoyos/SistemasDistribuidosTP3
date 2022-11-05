@@ -28,7 +28,7 @@ const levantaMapaExistente = function(link){
             for(let i = 0; i < aux.length; i++){
                       
                 let sucursal = new Object()
-                sucursal.id = i + 1
+                sucursal.branchId = i + 1
                 sucursal.lat = aux[i].location.coordinates[1]
                 sucursal.lng = aux[i].location.coordinates[0]
                 sucursal.name = aux[i].category.name 
@@ -42,28 +42,6 @@ const levantaMapaExistente = function(link){
   }).on('error', error => console.error(error.message))
 }
 
-/*
-const escucha = function(){ 
-  http.createServer((request, response) =>  {
-    const { headers, method, url } = request;
-    let body = [];
-  
-    request.on('error', (err) => {
-      console.error(err);
-    }).on('data', (chunk) => 
-    {
-      body.push(chunk);
-    }).on('end', async () => 
-    {
-      if(request.method === 'GET'){
-        msg = JSON.stringify(sucursales)
-      } 
-      response.end(msg);
-    });
-  }).listen(PORT);
-}
-*/
-
 const generaMapa = function(sucursales,titulo,descripcion) {  //Genera un mapa usando la API
   
   var data = JSON.stringify({
@@ -71,6 +49,7 @@ const generaMapa = function(sucursales,titulo,descripcion) {  //Genera un mapa u
     slug: "",
     description: descripcion,
     privacy : "unlisted",
+    //users_can_create_markers : "only_logged_in"
     users_can_create_markers : "yes"})
   
   
@@ -172,9 +151,9 @@ const generaMarkers = function(sucursales, ruta) { //Genera markers en el mapa p
 const magia = async function() {
 
 
-  await levantaMapaExistente(linkMarkers)
+  //await levantaMapaExistente(linkMarkers)
   //escucha()
-  await generaMapa(archivo.leerDatosJson("sucursales.json"),"Mapa Sucursales","hola breo")
+  await generaMapa(archivo.leerDatosJson("sucursales.json"),"Mapa Sucursales2","hola breo")
 
 }
 
