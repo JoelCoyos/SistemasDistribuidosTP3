@@ -57,7 +57,7 @@ http.createServer((request, response) =>  {
       if(urlParse.parse(request.url,true).pathname == '/api/reservas/') //get turnos
       {
         let query = urlParse.parse(request.url,true).query;
-        msg = getTurnos(query.userId,query.date,query.branchId);
+        msg = getTurnos(query.userId,query.dateTime,query.branchId);
       }
       else if(request.url.match(/\/api\/reserva\/\w+/)) //Get reserva
       {
@@ -77,7 +77,7 @@ http.createServer((request, response) =>  {
 }).listen(PORT);
 
 
-function getTurnos(userId,date,branchId)
+function getTurnos(userId,dateTime,branchId)
 {
   let turnos = [];
   let reservas = archivo.leerDatosJson("reservas.json");
@@ -85,7 +85,7 @@ function getTurnos(userId,date,branchId)
   turnos = reservas.filter(turno => 
     ( 
       (userId  == undefined  || turno.userId    == userId)  && 
-      (date     == undefined || new Date(turno.date).toISOString().split('T')[0] == new Date(date).toISOString().split('T')[0] )  && 
+      (dateTime     == undefined || new Date(turno.dateTime).toISOString().split('T')[0] == new Date(dateTime).toISOString().split('T')[0] )  && 
       (branchId == undefined || turno.branchId  == branchId)
     )
   )
