@@ -3,9 +3,12 @@ var app = new function () {
 
     this.mostrarReservas =  function()
     {
-        const url = new URL("http://localhost:8080/api/reservas/")
+        let fecha_consultar =new Date(document.getElementById('fecha_consultar').value).toISOString();
+        console.log(fecha_consultar);
+        var url = new URL("http://localhost:8080/api/reservas/");
+        url.search = new URLSearchParams({date:fecha_consultar})
         fetch(url,{
-            method:'GET'
+            method:'GET',
         })
         .then((response) => {
             console.log(response);
@@ -27,7 +30,6 @@ var app = new function () {
                 data += '</tr>';
               }
             }
-            console.log("anda?");
             document.getElementById('reservas').innerHTML = data;
             document.getElementById('reservas').style.display = 'block';
         })
