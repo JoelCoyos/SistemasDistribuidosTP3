@@ -3,12 +3,13 @@ const fs = require('fs');
 let sucursales = [1];
 
 class Turno {
-    constructor(idTurno,date,branchId) {
-        this.idTurno = idTurno;
-        this.date = date
+    constructor(idReserva,dateTime,branchId) {
+        this.idReserva = idReserva;
+        this.dateTime = dateTime;
         this.userId = -1;
-        this.email = "";
+        this.email = null;
         this.branchId = branchId;
+        this.status = 0;
     }
 }
 

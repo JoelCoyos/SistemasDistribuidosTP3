@@ -8,7 +8,7 @@ const linkMarkers = `${API}${mapa}/markers`
 
 const { error } = require('console')
 const https = require('https')
-const archivo = require('./archivos')
+const archivo = require('../archivos')
 
 const PORT = 8080
 var sucursales = []
@@ -35,7 +35,7 @@ const levantaMapaExistente = function(link){
 
                 sucursales.push(sucursal)
           }
-          archivo.escribirArchivoJson("sucursales.json",sucursales)
+          archivo.escribirArchivoJson("../gestion_sucursales/sucursales.json",sucursales)
           //console.log(sucursales)
           })
       }
@@ -151,9 +151,9 @@ const generaMarkers = function(sucursales, ruta) { //Genera markers en el mapa p
 const magia = async function() {
 
 
-  //await levantaMapaExistente(linkMarkers)
+  await levantaMapaExistente(linkMarkers)
   //escucha()
-  await generaMapa(archivo.leerDatosJson("sucursales.json"),"Mapa Sucursales2","hola breo")
+  //await generaMapa(archivo.leerDatosJson("sucursales.json"),"Mapa Sucursales2","hola breo")
 
 }
 

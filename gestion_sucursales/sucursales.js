@@ -1,7 +1,7 @@
 const http = require('http');
 const { arch } = require('os');
 const PORT = 8080;
-const archivo = require('./archivos')
+const archivo = require('../archivos')
 
 const urlParse = require('url');
 
