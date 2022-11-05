@@ -1,16 +1,15 @@
 const http = require('http');
 
 var data = {
-  userId: 0,
-  email: "juan@gmail.com"
+  userId: 0
 }
 
 const options = 
 {
     hostname: 'localhost',
     port: 8080,
-    path:'/api/reserva/?branchId=1&userId=0',
-    method:'GET',
+    path:'/api/reservas/1',
+    method:'POST',
 };
 
 const req = http.request(options, (res) => {
