@@ -25,6 +25,8 @@ http.createServer((request, response) =>  {
   const { headers, method, url } = request;
   let body = [];
   let msg = '';
+  response.setHeader('Content-Type', 'application/json');
+  response.setHeader('Access-Control-Allow-Origin', '*');
   request.on('error', (err) => {
     console.error(err);
   }).on('data', (chunk) => 
@@ -52,10 +54,9 @@ http.createServer((request, response) =>  {
     }
     else if(request.method == 'GET')
     {
-      if(urlParse.parse(request.url,true).pathname == '/api/reserva/') //get turnos
+      if(urlParse.parse(request.url,true).pathname == '/api/reservas/') //get turnos
       {
         let query = urlParse.parse(request.url,true).query;
-        console.log(query.userId +' '+ query.date + ' '+ query.branchId);
         msg = getTurnos(query.userId,query.date,query.branchId);
       }
       else if(request.url.match(/\/api\/reserva\/\w+/)) //Get reserva
@@ -80,10 +81,11 @@ function getTurnos(userId,date,branchId)
 {
   let turnos = [];
   let reservas = archivo.leerDatosJson("reservas.json");
+
   turnos = reservas.filter(turno => 
     ( 
       (userId  == undefined  || turno.userId    == userId)  && 
-      (date     == undefined || turno.date      == date)  && 
+      (date     == undefined || new Date(turno.date).toISOString().split('T')[0] == new Date(date).toISOString().split('T')[0] )  && 
       (branchId == undefined || turno.branchId  == branchId)
     )
   )
