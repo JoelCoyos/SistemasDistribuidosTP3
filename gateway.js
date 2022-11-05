@@ -8,9 +8,10 @@ const options =
 {
     hostname: 'localhost',
     port: 8080,
-    path:'/api/reservas/1',
-    method:'POST',
+    path:'/api/sucursales',
+    method:'GET',
 };
+
 
 const req = http.request(options, (res) => {
     res.setEncoding('utf8');
@@ -19,9 +20,15 @@ const req = http.request(options, (res) => {
       body.push(chunk);
     });
     res.on('end', () => {
-      console.log(body.toString());
+      if(res.statusCode == 200)
+        console.log(JSON.parse(body))
+      else{
+        console.log(res.statusCode)
+        console.log(body)
+      }
+      
     });
 });
 
-req.write(JSON.stringify(data));
+//req.write(JSON.stringify(data));
 req.end();
