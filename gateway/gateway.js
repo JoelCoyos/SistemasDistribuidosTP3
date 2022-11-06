@@ -1,6 +1,6 @@
 
 const http = require('http');
-const PORT = 8081
+const PORT = 8080
 
 http.createServer((request, response) =>  {
     const { headers, method, url } = request;
@@ -15,7 +15,7 @@ http.createServer((request, response) =>  {
     {
       
       if(request.url.split('/')[2] == 'sucursales'){
-        puerto = 8080 // gestion sucursales
+        puerto = 8081 // gestion sucursales
       } else if(request.url.split('/')[2] == 'reservas'){
         puerto = 8082 
       } else {
@@ -58,63 +58,3 @@ http.createServer((request, response) =>  {
     });
   }).listen(PORT);
   
-/*
-const solicitud = function(puerto, ruta, metodo){
-
-    var options2 = 
-    {
-      hostname: 'localhost',
-      port: puerto,
-      path: ruta,
-      method: metodo,
-    };
-
-    const req = http.request(options2, (res) => {
-        res.setEncoding('utf8');
-        let body = [];
-        res.on('data', (chunk) => {
-          body.push(chunk);
-        });
-        res.on('end', () => {
-          
-          return res.body
-        });
-    });
-    
-    req.end();
-}*/
-
-/*  gateway anterior
-const http = require('http');
-
-var data = {
-  userId: 0
-}
-
-const options = 
-{
-    hostname: 'localhost',
-    port: 8080,
-    path:'/api/sucursales/?branchId=5',
-    method:'GET',
-};
-
-const req = http.request(options, (res) => {
-    res.setEncoding('utf8');
-    let body = [];
-    res.on('data', (chunk) => {
-      body.push(chunk);
-    });
-    res.on('end', () => {
-      if(res.statusCode == 200)
-        console.log(JSON.parse(body))
-      else{
-        console.log(res.statusCode)
-        console.log(body)
-      }
-      
-    });
-});
-
-//req.write(JSON.stringify(data));
-req.end();*/
