@@ -1,6 +1,6 @@
 const http = require('http');
 const sendEmail = require('../gestion_notificaciones/gestionNotificaciones');
-const PORT = 8080
+const PORT = 8082
 const fs = require('fs');
 const archivo = require('../archivos');
 const urlParse = require('url');
