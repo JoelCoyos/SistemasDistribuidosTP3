@@ -8,6 +8,7 @@ const { setDefaultResultOrder } = require('dns');
 const LIBRE=0
 const BLOQUEADO=1
 const RESERVADO=2
+const TIEMPO_BLOQUEO=20000
 
 
 
@@ -39,12 +40,12 @@ http.createServer((request, response) =>  {
 
     if(request.method === 'POST')
     {
-      if(request.url.match(/\/api\/reservas\/confirmar\/\w+/))
+      if(request.url.match(/\/api\/reservas\/confirmar\/\w+/)) //CONFIRMAR EL ALTA
       {
         const idTurno = request.url.split('/')[4];
         msg = alta(idTurno,JSON.parse(body));
       }
-      else if(request.url.match(/\/api\/reservas\/solicitar\/[1,2,3,4,5,6,7,8,9]+/)){
+      else if(request.url.match(/\/api\/reservas\/solicitar\/[1,2,3,4,5,6,7,8,9]+/)){ //VERIFICACION
         idReserva=request.url.split('/')[4]
         userId = JSON.parse(body).userId
         console.log("idReserva: "+idReserva+"\nuserId: "+userId)
@@ -103,6 +104,7 @@ function alta(idReserva,newReserva)
     reserva.status = RESERVADO
     reservas[idReserva] = reserva;
     archivo.escribirArchivoJson("reservas.json",reservas);
+    enviaMail(newReserva.emai,"Registro de turno","<p>Hola te has registrado correctamente <strong>verso en negrita</strong>, <strong>otro verso. Integrar una plantilla</strong></p>")
     return "todo bien"
   }
   else
@@ -110,7 +112,6 @@ function alta(idReserva,newReserva)
     return "ya esta ocupado"
   }
 }
-
 
 
 function verificaTurno(idReserva,userId){
@@ -127,13 +128,59 @@ function verificaTurno(idReserva,userId){
         console.log("Se te expiro el tiempo logiii")
         archivo.escribirArchivoJson("reservas.json",reservas);
       }
-    },15000);
+    },TIEMPO_BLOQUEO);
   }
   else
     msg="EL TURNO YA SE ENCUENTRA OCUPADO."
   
   return msg
 }
+
+
+function enviaMail(to,subject,value){
+
+
+  var data = {
+    destinatario: to,
+    asunto: subject,
+    cuerpo: value
+  }
+  
+  const options = 
+  {
+      hostname: 'localhost',
+      port: 70,
+      path:'/api/notificacion',
+      method:'POST',
+  };
+
+  const req = http.request(options, (res) => {
+    res.setEncoding('utf8');
+    let body = [];
+    res.on('data', (chunk) => {
+      body.push(chunk);
+    });
+    res.on('end', () => {
+      if(res.statusCode == 200)
+        console.log(JSON.parse(body))
+      else{
+        console.log(res.statusCode)
+        console.log(body)
+      }
+
+    });
+  });
+
+  req.write(data)
+  req.end();  
+
+}
+
+
+
+
+
+
 
 
 //Agustin

@@ -8,9 +8,22 @@ const options =
 {
     hostname: 'localhost',
     port: 8080,
-    path:'/api/sucursales',
-    method:'GET',
+    path:'/api/reservas/solicitar/4',
+    method:'POST',
 };
+
+/*var data = {
+  email:"spateranahuel"
+  userId: 0
+}
+
+const options = 
+{
+    hostname: 'localhost',
+    port: 8080,
+    path:'/api/reservas/confirmar/4',
+    method:'POST',
+};*/
 
 
 const req = http.request(options, (res) => {
