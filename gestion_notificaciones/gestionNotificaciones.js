@@ -1,4 +1,5 @@
-///////////////////////////REQUEST HTTP A API DE SENDGRID/////////////////////////AAAAAAAAAAAAAAAAAAAA
+///////////////////////////REQUEST HTTP A API DE SENDGRID/////////////////////////
+http = require('http')
 https = require('https')
 
 var options = {
@@ -37,7 +38,7 @@ const mailBody = {
   
 }
 
-const PORT = 70
+const PORT = 8085
 
 
 http.createServer((request, response) =>  {
@@ -85,9 +86,9 @@ function enviarMail(destinatario,asunto,cuerpo){
         });
     });
     
-    mailBody.personalizations[0].to[0].email = JSON.parse(body).destinatario;
-    mailBody.subject = JSON.parse(body).asunto
-    mailBody.content[0].value= JSON.parse(body).cuerpo
+    mailBody.personalizations[0].to[0].email = destinatario;
+    mailBody.subject = asunto
+    mailBody.content[0].value= cuerpo
     console.log("Que funcionee")
     req.write(JSON.stringify(mailBody))
     req.end(); 
@@ -97,4 +98,3 @@ function enviarMail(destinatario,asunto,cuerpo){
 
 
 
-  //Esta bien que se comniquen a gestion_notificaciones con peticiones HTTP? La otra opcion seria que fuese un paquete pero no tendria sentido la url api/notificacion/:idReserva

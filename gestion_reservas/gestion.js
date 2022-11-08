@@ -1,5 +1,4 @@
 const http = require('http');
-const sendEmail = require('../gestion_notificaciones/gestionNotificaciones');
 const PORT = 8080
 const fs = require('fs');
 const archivo = require('../archivos');
@@ -8,7 +7,7 @@ const { setDefaultResultOrder } = require('dns');
 const LIBRE=0
 const BLOQUEADO=1
 const RESERVADO=2
-const TIEMPO_BLOQUEO=20000
+const TIEMPO_BLOQUEO=200000
 
 
 
@@ -26,8 +25,6 @@ http.createServer((request, response) =>  {
   const { headers, method, url } = request;
   let body = [];
   let msg = '';
-  response.setHeader('Content-Type', 'application/json');
-  response.setHeader('Access-Control-Allow-Origin', '*');
   request.on('error', (err) => {
     console.error(err);
   }).on('data', (chunk) => 
@@ -104,7 +101,7 @@ function alta(idReserva,newReserva)
     reserva.status = RESERVADO
     reservas[idReserva] = reserva;
     archivo.escribirArchivoJson("reservas.json",reservas);
-    enviaMail(newReserva.emai,"Registro de turno","<p>Hola te has registrado correctamente <strong>verso en negrita</strong>, <strong>otro verso. Integrar una plantilla</strong></p>")
+    enviaMail(newReserva.email,"Registro de turno","<p>Hola te has registrado correctamente <strong>verso en negrita</strong>, <strong>otro verso. Integrar una plantilla</strong></p>")
     return "todo bien"
   }
   else
@@ -149,7 +146,7 @@ function enviaMail(to,subject,value){
   const options = 
   {
       hostname: 'localhost',
-      port: 70,
+      port: 8085,
       path:'/api/notificacion',
       method:'POST',
   };
@@ -171,7 +168,7 @@ function enviaMail(to,subject,value){
     });
   });
 
-  req.write(data)
+  req.write(JSON.stringify(data))
   req.end();  
 
 }
@@ -194,3 +191,8 @@ function modificacion(datos)
 {
   sol = JSON.parse(datos)
 }
+
+  //Esta bien que se comniquen a gestion_notificaciones con peticiones HTTP? La otra opcion seria que fuese un paquete pero no tendria sentido la url api/notificacion/:idReserva
+  //Lo puse en puerto 8085
+  //Las reservas empiezan de cero o uno
+  
