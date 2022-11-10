@@ -1,16 +1,17 @@
 const http = require('http');
 const { arch } = require('os');
-const PORT = 8080;
-const archivo = require('../archivos')
+const PORT = 8081;
+const archivo = require('./archivos')
 
 const urlParse = require('url');
 
-var sucursales = archivo.leerDatosJson('sucursales.json')
 
 http.createServer((request, response) =>  {
   const { headers, method, url } = request;
   let body = [];
-
+  response.setHeader('Content-Type', 'application/json');
+  response.setHeader('Access-Control-Allow-Origin', '*');
+  var sucursales = archivo.leerDatosJson('sucursales.json')
   request.on('error', (err) => {
     console.error(err);
   }).on('data', (chunk) => 
