@@ -4,9 +4,10 @@ var app = new function () {
     this.mostrarReservas =  function()
     {
         let fecha_consultar =new Date(document.getElementById('fecha_consultar').value).toISOString();
-        console.log(fecha_consultar);
+        let sucursal_consultar = document.getElementById('select-sucursal').value;
         var url = new URL("http://localhost:8080/api/reservas/");
-        url.search = new URLSearchParams({dateTime:fecha_consultar})
+        if(sucursal_consultar!=-1) url.search = new URLSearchParams({dateTime:fecha_consultar,branchId:sucursal_consultar})
+        else url.search = new URLSearchParams({dateTime:fecha_consultar})
         fetch(url,{
             method:'GET',
         })
@@ -26,7 +27,7 @@ var app = new function () {
                 var dateTime = new Date(fecha);
                 data += '<tr>';
                 data += '<td id='+reservas[i].idTurno+'>Fecha: ' + dateTime.toLocaleDateString() + ' Horario: '+ dateTime.toLocaleTimeString() +' Sucursal: ' + sucursal +  '</td>'
-                data += '<td><input type="radio" onclick="app.Reservar(' + i + ')"></td>';
+                data += '<td><input type="radio" name="turno"(' + i + ')"></td>';
                 data += '</tr>';
               }
             }
@@ -38,6 +39,34 @@ var app = new function () {
            alert(error);
         });
     }
-
 }
 
+function mostrarSucursales()
+{
+    var url = new URL("http://localhost:8081/api/sucursales");
+    fetch(url,{
+        method:'GET'
+    })
+    .then((response) => {
+        if (!response.ok) {
+            throw new Error("HTTP status " + response.status);
+        }
+        return response.json();
+    })
+    .then((sucursales) => {
+        if (sucursales.length > 0) {
+            var data='<option value="-1">Cualquiera</option>'
+            for (i = 0; i < sucursales.length; i++) {
+                var nombre = sucursales[i].name;
+                var id = sucursales[i].branchId;
+                data +='<option value="'+id+'">'+nombre+'</option>'
+            }
+        }
+        document.getElementById('select-sucursal').innerHTML = data;
+    })
+    .catch((error) => {
+       alert(error);
+    });
+}
+
+mostrarSucursales();
