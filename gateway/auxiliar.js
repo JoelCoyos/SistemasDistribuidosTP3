@@ -8,7 +8,7 @@ const options =
 {
     hostname: 'localhost',
     port: 8080,
-    path:'/api/sucursales',
+    path:'/api/reservas/?branchId=1',
     method:'GET',
 };
 
