@@ -26,7 +26,6 @@ http.createServer((request, response) =>  {
   let body = [];
   let msg = '';
   response.setHeader('Content-Type', 'application/json');
-  response.setHeader('Access-Control-Allow-Origin', '*');
   request.on('error', (err) => {
     console.error(err);
   }).on('data', (chunk) => 

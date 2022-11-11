@@ -43,7 +43,7 @@ var app = new function () {
 
 function mostrarSucursales()
 {
-    var url = new URL("http://localhost:8081/api/sucursales");
+    var url = new URL("http://localhost:8080/api/sucursales");
     fetch(url,{
         method:'GET'
     })

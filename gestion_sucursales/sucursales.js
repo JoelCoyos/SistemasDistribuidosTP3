@@ -10,7 +10,6 @@ http.createServer((request, response) =>  {
   const { headers, method, url } = request;
   let body = [];
   response.setHeader('Content-Type', 'application/json');
-  response.setHeader('Access-Control-Allow-Origin', '*');
   var sucursales = archivo.leerDatosJson('sucursales.json')
   request.on('error', (err) => {
     console.error(err);

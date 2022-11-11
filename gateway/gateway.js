@@ -5,7 +5,7 @@ const PORT = 8080
 http.createServer((request, response) =>  {
     const { headers, method, url } = request;
     let body = [];
-  
+    response.setHeader('Access-Control-Allow-Origin', '*');
     request.on('error', (err) => {
       console.error(err);
     }).on('data', (chunk) => 
@@ -47,14 +47,10 @@ http.createServer((request, response) =>  {
             response.writeHead(res.statusCode,res.body)
             msg = JSON.stringify(body2)
           }
-          console.log(msg)
           response.end(msg);
         });
       });
-    
       req.end();
-
-      
     });
   }).listen(PORT);
   
