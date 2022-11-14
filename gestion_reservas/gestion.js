@@ -43,7 +43,7 @@ http.createServer((request, response) =>  {
         const idTurno = request.url.split('/')[4];
         msg = alta(idTurno,JSON.parse(body));
       }
-      else if(request.url.match(/\/api\/reservas\/solicitar\/[1,2,3,4,5,6,7,8,9]+/)){
+      else if(request.url.match(/\/api\/reservas\/solicitar\/[0,1,2,3,4,5,6,7,8,9]+/)){
         idReserva=request.url.split('/')[4]
         userId = JSON.parse(body).userId
         console.log("idReserva: "+idReserva+"\nuserId: "+userId)
@@ -71,7 +71,7 @@ http.createServer((request, response) =>  {
     {
 
     }
-    response.end(msg);
+    response.end(JSON.stringify(msg));
   });
 }).listen(PORT);
 
@@ -88,7 +88,7 @@ function getTurnos(userId,dateTime,branchId)
       (branchId == undefined || turno.branchId  == branchId)
     )
   )
-  return JSON.stringify(turnos);
+  return turnos;
 }
 
 function alta(idReserva,newReserva) 
@@ -114,7 +114,6 @@ function alta(idReserva,newReserva)
 
 function verificaTurno(idReserva,userId){
   let reservas = archivo.leerDatosJson("reservas.json");
-  
   if(reservas[idReserva].status==LIBRE){ //CREO QUE ESTO TIENE QUE SER SYNCRONICO
     msg="TURNO DISPONIBLE. AHORA TE MUESTRO LA VENTANA INTERMEDIA PARA QUE CONFIRMES LA RESERVA."
     reservas[idReserva].userId=userId;

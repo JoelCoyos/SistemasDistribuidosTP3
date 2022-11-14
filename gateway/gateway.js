@@ -13,7 +13,13 @@ http.createServer((request, response) =>  {
       body.push(chunk);
     }).on('end', async () => 
     {
-      
+      if(request.method == 'OPTIONS')
+      {
+        response.setHeader('Access-Control-Allow-Methods', 'POST');
+        response.setHeader('Access-Control-Allow-Headers', 'content-type');
+        response.end();
+        return;
+      }
       if(request.url.split('/')[2] == 'sucursales'){
         puerto = 8081 // gestion sucursales
       } else if(request.url.split('/')[2] == 'reservas'){
@@ -23,13 +29,27 @@ http.createServer((request, response) =>  {
       }
 
       let msg = ''
-      var options2 = 
+      var options2  = null;
+      if(request.method == 'POST')
       {
-        hostname: 'localhost',
-        port: puerto,
-        path: request.url,
-        method: request.method,
-      };
+        options2 = 
+        {
+          hostname: 'localhost',
+          port: puerto,
+          path: request.url,
+          method: request.method,
+        };
+      }
+      else
+      {
+        options2 = 
+        {
+          hostname: 'localhost',
+          port: puerto,
+          path: request.url,
+          method: request.method,
+        };
+      }
 
       const req = http.request(options2, (res) => {
         res.setEncoding('utf8');
@@ -38,10 +58,8 @@ http.createServer((request, response) =>  {
           body2.push(chunk2);
         });
         res.on('end', () => {
-          
           if(res.statusCode == 200){
             msg = JSON.parse(body2)
-            console.log(msg)
             msg = JSON.stringify(msg)
           } else {
             response.writeHead(res.statusCode,res.body)
@@ -50,6 +68,7 @@ http.createServer((request, response) =>  {
           response.end(msg);
         });
       });
+      req.write(JSON.stringify(body));
       req.end();
     });
   }).listen(PORT);

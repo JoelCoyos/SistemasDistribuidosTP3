@@ -1,6 +1,5 @@
 
 var app = new function () {
-
     this.mostrarReservas =  function()
     {
         let fecha_consultar =new Date(document.getElementById('fecha_consultar').value).toISOString();
@@ -27,17 +26,49 @@ var app = new function () {
                 var dateTime = new Date(fecha);
                 data += '<tr>';
                 data += '<td id='+reservas[i].idTurno+'>Fecha: ' + dateTime.toLocaleDateString() + ' Horario: '+ dateTime.toLocaleTimeString() +' Sucursal: ' + sucursal +  '</td>'
-                data += '<td><input type="radio" name="turno"(' + i + ')"></td>';
+                data += '<td><input type="radio" name="turno" value="'+i+'"></td>';
                 data += '</tr>';
               }
             }
-            data+='<button>Reservar</button>'
+            data+='<button onclick="app.verificar();">Reservar</button>'
             document.getElementById('reservas').innerHTML = data;
             document.getElementById('reservas').style.display = 'block';
         })
         .catch((error) => {
            alert(error);
         });
+    }
+
+    this.verificar = function()
+    {
+        var turnos = document.getElementsByName('turno');
+        let idReserva;
+        for(i=0; i< turnos.length;i++)
+        {
+            if(turnos[i].checked)
+            {
+                idReserva = turnos[i].value;
+            }
+        }
+        var url = 'http://localhost:8080/api/reservas/solicitar/' + idReserva;
+        const bodyRequest = {
+            userId:'0'
+        }
+        console.log(JSON.stringify(bodyRequest));
+        fetch(url,{
+            method:"POST",
+            headers: { 'Content-Type': 'application/json' },
+            body:JSON.stringify(bodyRequest)
+        })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error("HTTP status " + response.status);
+            }
+        })
+        .catch((error) => {
+           alert(error);
+        });
+
     }
 }
 
