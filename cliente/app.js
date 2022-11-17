@@ -30,6 +30,7 @@ var app = new function () {
                 data += '</tr>';
               }
             }
+            data+='<h3>Email:<input type="text" id="email" name="email"><br><br></h3>'
             data+='<button onclick="app.verificar();">Reservar</button>'
             document.getElementById('reservas').innerHTML = data;
             document.getElementById('reservas').style.display = 'block';
@@ -92,7 +93,7 @@ function altaTurno(idReserva)
     var url = 'http://localhost:8080/api/reservas/confirmar/' + idReserva;
     const bodyRequest = {
         userId:'0',
-        email:'joel@mail.com'
+        email:document.getElementById('email').value
     }
     fetch(url,{
         method:"POST",
@@ -127,8 +128,8 @@ function mostrarSucursales()
                 var id = sucursales[i].branchId;
                 data +='<option value="'+id+'">'+nombre+'</option>'
             }
+            document.getElementById('select-sucursal').innerHTML = data;
         }
-        document.getElementById('select-sucursal').innerHTML = data;
     })
     .catch((error) => {
        alert(error);
