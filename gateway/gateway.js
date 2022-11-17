@@ -30,26 +30,14 @@ http.createServer((request, response) =>  {
 
       let msg = ''
       var options2  = null;
-      if(request.method == 'POST')
+      options2 = 
       {
-        options2 = 
-        {
           hostname: 'localhost',
           port: puerto,
           path: request.url,
           method: request.method,
-        };
-      }
-      else
-      {
-        options2 = 
-        {
-          hostname: 'localhost',
-          port: puerto,
-          path: request.url,
-          method: request.method,
-        };
-      }
+      };
+
 
       const req = http.request(options2, (res) => {
         res.setEncoding('utf8');
@@ -68,7 +56,10 @@ http.createServer((request, response) =>  {
           response.end(msg);
         });
       });
-      req.write(JSON.stringify(body));
+      if(body.length!=0)
+      {
+        req.write(JSON.stringify(JSON.parse(body)));
+      }
       req.end();
     });
   }).listen(PORT);

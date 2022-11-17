@@ -5,8 +5,8 @@ var app = new function () {
         let fecha_consultar =new Date(document.getElementById('fecha_consultar').value).toISOString();
         let sucursal_consultar = document.getElementById('select-sucursal').value;
         var url = new URL("http://localhost:8080/api/reservas/");
-        if(sucursal_consultar!=-1) url.search = new URLSearchParams({dateTime:fecha_consultar,branchId:sucursal_consultar})
-        else url.search = new URLSearchParams({dateTime:fecha_consultar})
+        if(sucursal_consultar!=-1) url.search = new URLSearchParams({dateTime:fecha_consultar,branchId:sucursal_consultar,userId:-1})
+        else url.search = new URLSearchParams({dateTime:fecha_consultar,userId:-1})
         fetch(url,{
             method:'GET',
         })
@@ -26,7 +26,7 @@ var app = new function () {
                 var dateTime = new Date(fecha);
                 data += '<tr>';
                 data += '<td id='+reservas[i].idTurno+'>Fecha: ' + dateTime.toLocaleDateString() + ' Horario: '+ dateTime.toLocaleTimeString() +' Sucursal: ' + sucursal +  '</td>'
-                data += '<td><input type="radio" name="turno" value="'+i+'"></td>';
+                data += '<td><input type="radio" name="turno" value="'+reservas[i].idReserva+'"></td>';
                 data += '</tr>';
               }
             }
@@ -54,22 +54,57 @@ var app = new function () {
         const bodyRequest = {
             userId:'0'
         }
-        console.log(JSON.stringify(bodyRequest));
         fetch(url,{
             method:"POST",
-            headers: { 'Content-Type': 'application/json' },
+            headers: {'Content-Type': 'application/json'},
             body:JSON.stringify(bodyRequest)
         })
         .then((response) => {
             if (!response.ok) {
-                throw new Error("HTTP status " + response.status);
+                throw new Error(JSON.parse(response.body).msg);
             }
         })
+        .then(() =>
+        {
+            let confirmacion = confirm("Esta seguro que quiere confirmar el turno?");       
+            if(confirmacion == true)    
+            {
+                altaTurno(idReserva);  
+            }    
+            else    
+            {    
+                alert("El turno no se ha confirmado");   
+                return;
+            }    
+  
+        })
         .catch((error) => {
-           alert(error);
+            alert("El turno no se ha podido reservar" + error);    
         });
 
+
+        
     }
+}
+
+function altaTurno(idReserva)
+{
+    var url = 'http://localhost:8080/api/reservas/confirmar/' + idReserva;
+    const bodyRequest = {
+        userId:'0',
+        email:'joel@mail.com'
+    }
+    fetch(url,{
+        method:"POST",
+        headers: { 'Content-Type': 'application/json' },
+        body:JSON.stringify(bodyRequest)
+    })
+    .then((response) => {
+        if (!response.ok) {
+            throw new Error(JSON.parse(response.body).msg);   
+        }
+        alert("El turno se ha reservado con exito");  
+    })
 }
 
 function mostrarSucursales()

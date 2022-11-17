@@ -40,11 +40,14 @@ http.createServer((request, response) =>  {
     {
       if(request.url.match(/\/api\/reservas\/confirmar\/\w+/))
       {
+        console.log("alta");
         const idTurno = request.url.split('/')[4];
         msg = alta(idTurno,JSON.parse(body));
       }
       else if(request.url.match(/\/api\/reservas\/solicitar\/[0,1,2,3,4,5,6,7,8,9]+/)){
         idReserva=request.url.split('/')[4]
+        bodyParsed = JSON.parse(body);
+        console.log(bodyParsed);
         userId = JSON.parse(body).userId
         console.log("idReserva: "+idReserva+"\nuserId: "+userId)
         msg=verificaTurno(idReserva,userId)
@@ -79,8 +82,8 @@ http.createServer((request, response) =>  {
 function getTurnos(userId,dateTime,branchId)
 {
   let turnos = [];
-  let reservas = archivo.leerDatosJson("reservas.json");
-
+  //let reservas = archivo.leerDatosJson('./gestion_reservas/reservas.json');
+  let reservas = archivo.leerDatosJson('reservas.json');
   turnos = reservas.filter(turno => 
     ( 
       (userId  == undefined  || turno.userId    == userId)  && 
@@ -93,15 +96,18 @@ function getTurnos(userId,dateTime,branchId)
 
 function alta(idReserva,newReserva) 
 { 
-  let reservas = archivo.leerDatosJson("reservas.json");
+  //let reservas = archivo.leerDatosJson('./gestion_reservas/reservas.json');
+  let reservas = archivo.leerDatosJson('reservas.json');
   if(reservas[idReserva].status==BLOQUEADO && reservas[idReserva].userId==newReserva.userId)
   {
     let reserva = reservas[idReserva];
+
     reserva.userId = newReserva.userId;
     reserva.email = newReserva.email;
     reserva.status = RESERVADO
     reservas[idReserva] = reserva;
-    archivo.escribirArchivoJson("reservas.json",reservas);
+    //archivo.escribirArchivoJson('./gestion_reservas/reservas.json',reservas);
+    archivo.escribirArchivoJson('reservas.json',reservas);
     return "todo bien"
   }
   else
@@ -113,17 +119,21 @@ function alta(idReserva,newReserva)
 
 
 function verificaTurno(idReserva,userId){
-  let reservas = archivo.leerDatosJson("reservas.json");
+  //let reservas = archivo.leerDatosJson('./gestion_reservas/reservas.json');
+  let reservas = archivo.leerDatosJson('reservas.json');
   if(reservas[idReserva].status==LIBRE){ //CREO QUE ESTO TIENE QUE SER SYNCRONICO
     msg="TURNO DISPONIBLE. AHORA TE MUESTRO LA VENTANA INTERMEDIA PARA QUE CONFIRMES LA RESERVA."
     reservas[idReserva].userId=userId;
     reservas[idReserva].status=BLOQUEADO;
-    archivo.escribirArchivoJson("reservas.json",reservas); //VER ESTO capaz ambos clientes ven que el userId esta desocupado y entran ambos . VER COMO BLOQUEAR RECURSO. 
+    //archivo.escribirArchivoJson('./gestion_reservas/reservas.json',reservas); //VER ESTO capaz ambos clientes ven que el userId esta desocupado y entran ambos . VER COMO BLOQUEAR RECURSO. 
+    archivo.escribirArchivoJson('reservas.json',reservas);
     idTimeOut=setTimeout(function(){
+      let reservas = archivo.leerDatosJson('reservas.json');
       if(reservas[idReserva].status==BLOQUEADO){
         reservas[idReserva].status=LIBRE
         console.log("Se te expiro el tiempo logiii")
-        archivo.escribirArchivoJson("reservas.json",reservas);
+       // archivo.escribirArchivoJson('./gestion_reservas/reservas.json',reservas);
+        archivo.escribirArchivoJson('reservas.json',reservas);
       }
     },15000);
   }
