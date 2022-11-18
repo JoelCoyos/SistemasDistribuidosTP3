@@ -119,30 +119,28 @@ function alta(idReserva,newReserva)
 
 
 function verificaTurno(idReserva,userId){
-  const mutex = new Mutex();
-  (async ()=>{
-    console.log("Pidiendo el lock");
-    const unlock = await mutex.lock();
-    let reservas = archivo.leerDatosJson("reservas.json");
-    if(reservas[idReserva].status==LIBRE){ //CREO QUE ESTO TIENE QUE SER SYNCRONICO
-      msg="TURNO DISPONIBLE. AHORA TE MUESTRO LA VENTANA INTERMEDIA PARA QUE CONFIRMES LA RESERVA."
-      reservas[idReserva].userId=userId;
-      reservas[idReserva].status=BLOQUEADO;
-      archivo.escribirArchivoJson("reservas.json",reservas); //VER ESTO capaz ambos clientes ven que el userId esta desocupado y entran ambos . VER COMO BLOQUEAR RECURSO. 
-      idTimeOut=setTimeout(function(){
-        if(reservas[idReserva].status==BLOQUEADO){
-          reservas[idReserva].status=LIBRE
-          console.log("Se te expiro el tiempo logiii")
-          archivo.escribirArchivoJson("reservas.json",reservas);
-        }
-      },15000);
-    }
-    else
-      msg="EL TURNO YA SE ENCUENTRA OCUPADO."
-    console.log("Saco el lock");
-    unlock();
-    return msg
-  })();
+  //let reservas = archivo.leerDatosJson('./gestion_reservas/reservas.json');
+  let reservas = archivo.leerDatosJson('reservas.json');
+  if(reservas[idReserva].status==LIBRE){ //CREO QUE ESTO TIENE QUE SER SYNCRONICO
+    msg="TURNO DISPONIBLE. AHORA TE MUESTRO LA VENTANA INTERMEDIA PARA QUE CONFIRMES LA RESERVA."
+    reservas[idReserva].userId=userId;
+    reservas[idReserva].status=BLOQUEADO;
+    //archivo.escribirArchivoJson('./gestion_reservas/reservas.json',reservas); //VER ESTO capaz ambos clientes ven que el userId esta desocupado y entran ambos . VER COMO BLOQUEAR RECURSO. 
+    archivo.escribirArchivoJson('reservas.json',reservas);
+    idTimeOut=setTimeout(function(){
+      let reservas = archivo.leerDatosJson('reservas.json');
+      if(reservas[idReserva].status==BLOQUEADO){
+        reservas[idReserva].status=LIBRE
+        console.log("Se te expiro el tiempo logiii")
+       // archivo.escribirArchivoJson('./gestion_reservas/reservas.json',reservas);
+        archivo.escribirArchivoJson('reservas.json',reservas);
+      }
+    },15000);
+  }
+  else
+    msg="EL TURNO YA SE ENCUENTRA OCUPADO."
+  
+  return msg
 }
 
 
@@ -156,17 +154,4 @@ function baja(datos)
 function modificacion(datos) 
 {
   sol = JSON.parse(datos)
-}
-
-function Mutex() {
-  let current = Promise.resolve();
-  this.lock = () => {
-      let _resolve;
-      const p = new Promise(resolve => {
-          _resolve = () => resolve();
-      });
-      const rv = current.then(() => _resolve);
-      current = p;
-      return rv;
-  };
 }
