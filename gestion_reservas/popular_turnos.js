@@ -1,20 +1,25 @@
 const fs = require('fs');
+const nombres = require('fake-people');
+const fakePeople = require('fake-people');
 
 let sucursales = [1];
+const rand = max => Math.floor(Math.random() * max);
 
 class Turno {
-    constructor(idReserva,dateTime,branchId) {
+    constructor(idReserva,dateTime,userId,email,branchId,status)
+    {
         this.idReserva = idReserva;
         this.dateTime = dateTime;
-        this.userId = -1;
-        this.email = null;
-        this.branchId = branchId;
-        this.status = 0;
+        this.email = email;
+        this.branchId=branchId;
+        this.userId=userId;
+        this.status=status;
     }
 }
 
-popularTurnosDia(10,1,8,18,1);
-//popularTurnosMes(10,8,18,1);
+
+//popularTurnosDia(10,1,8,18,1);
+popularTurnosMes(10,8,18,1);
 
 function popularTurnosDia(mes,dia,horaInicio,horaFin,duracionTurno)
 {
@@ -44,7 +49,15 @@ function popularTurnosMes(mes,horaInicio,horaFin,duracionTurno)
         {
             for(let i =horaInicio;i<=horaFin;i+=duracionTurno)
             {
-                turnos.push(new Turno(count,new Date(2022,mes,j,i),sucursal));
+                if(rand(2)==1)
+                {
+                    turnos.push(new Turno(count,new Date(2022,mes,j,i),-1,null,sucursal,0));
+                }
+                else
+                {
+                    let personaRandom = fakePeople.generate();
+                    turnos.push(new Turno(count,new Date(2022,mes,j,i),0,personaRandom.contacts.email,sucursal,2));
+                }
                 count++;
             }
         }
@@ -54,3 +67,4 @@ function popularTurnosMes(mes,horaInicio,horaFin,duracionTurno)
         if (err) return "todo mal";
       });
 }
+
