@@ -4,6 +4,7 @@
 <head>
     <title>Reservas</title>
     <script src="app.js"></script>
+    <script src="pruebamapas.js"></script>
 </head>
 
 <body>
@@ -14,6 +15,11 @@
         <a>Sucursal a consultar</a>
         <select name="Seleccionar Sucursal" id="select-sucursal"></select>
     </h3>
+    <iframe src="https://app.cartes.io/maps/986cfcf5-1956-4255-91fa-ae5299e460d5/embed?type=map"
+    width="100%"
+    height="400"
+    frameborder="0">
+    </iframe>
     <a class="btn btn-common btn-rm" href="#" onclick="app.mostrarReservas();">Consultar</a>
     <table>
         <tbody id="reservas"></tbody>

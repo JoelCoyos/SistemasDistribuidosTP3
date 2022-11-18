@@ -1,5 +1,4 @@
 const http = require('http');
-const sendEmail = require('../gestion_notificaciones/gestionNotificaciones');
 const PORT = 8082
 const fs = require('fs');
 const archivo = require('./archivos');
@@ -9,8 +8,6 @@ const LIBRE=0
 const BLOQUEADO=1
 const RESERVADO=2
 const mutexReservas =new Mutex();
-
-
 
 class Turno {
     constructor(nroTurno, newReserva) {
@@ -113,6 +110,7 @@ async function alta(idReserva,newReserva)
     reservas[idReserva] = reserva;
     //archivo.escribirArchivoJson('./gestion_reservas/reservas.json',reservas);
     archivo.escribirArchivoJson('reservas.json',reservas);
+    enviaMail(newReserva.email,"Registro de turno","<p>Hola te has registrado correctamente <strong>verso en negrita</strong>, <strong>otro verso. Integrar una plantilla</strong></p>");
     msg ="todo bien"
   }
   else
@@ -156,6 +154,43 @@ async function verificaTurno(idReserva,userId){
     return msg
 }
 
+function enviaMail(to,subject,value){
+  var data = {
+    destinatario: to,
+    asunto: subject,
+    cuerpo: value
+  }
+  
+  const options = 
+  {
+      hostname: 'localhost',
+      port: 8083,
+      path:'/api/notificacion',
+      method:'POST',
+  };
+
+  const req = http.request(options, (res) => {
+    res.setEncoding('utf8');
+    let body = [];
+    res.on('data', (chunk) => {
+      body.push(chunk);
+    });
+    res.on('end', () => {
+      if(res.statusCode == 200)
+        //console.log(JSON.parse(body))
+        console.log("HOLA")
+      else{
+        console.log(res.statusCode)
+        console.log(body)
+      }
+
+    });
+  });
+
+  req.write(JSON.stringify(data))
+  req.end();  
+}
+
 
 //Agustin
 function baja(datos) 
@@ -185,5 +220,3 @@ function Mutex() {
       return rv;
   };
 }
-
-const delay = (ms, value) => new Promise(resolve => setTimeout(resolve, ms, value));
