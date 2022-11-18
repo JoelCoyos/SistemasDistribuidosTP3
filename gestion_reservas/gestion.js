@@ -8,6 +8,7 @@ const { setDefaultResultOrder } = require('dns');
 const LIBRE=0
 const BLOQUEADO=1
 const RESERVADO=2
+const mutexReservas =new Mutex();
 
 
 
@@ -50,7 +51,8 @@ http.createServer((request, response) =>  {
         console.log(bodyParsed);
         userId = JSON.parse(body).userId
         console.log("idReserva: "+idReserva+"\nuserId: "+userId)
-        msg=verificaTurno(idReserva,userId)
+        msg= await verificaTurno(idReserva,userId)
+        console.log("Salgo del verificar turno");
 
       }
     }
@@ -94,9 +96,12 @@ function getTurnos(userId,dateTime,branchId)
   return turnos;
 }
 
-function alta(idReserva,newReserva) 
+async function alta(idReserva,newReserva) 
 { 
   //let reservas = archivo.leerDatosJson('./gestion_reservas/reservas.json');
+  console.log("Pido el lock alta");
+  const unlock = await mutexReservas.lock();
+  let msg ="";
   let reservas = archivo.leerDatosJson('reservas.json');
   if(reservas[idReserva].status==BLOQUEADO && reservas[idReserva].userId==newReserva.userId)
   {
@@ -108,39 +113,47 @@ function alta(idReserva,newReserva)
     reservas[idReserva] = reserva;
     //archivo.escribirArchivoJson('./gestion_reservas/reservas.json',reservas);
     archivo.escribirArchivoJson('reservas.json',reservas);
-    return "todo bien"
+    msg ="todo bien"
   }
   else
   {
-    return "ya esta ocupado"
+    msg = "ya esta ocupado"
   }
+  console.log("Liberando lock verificacion");
+  unlock();
+  return msg;
+
 }
 
 
 
-function verificaTurno(idReserva,userId){
-  //let reservas = archivo.leerDatosJson('./gestion_reservas/reservas.json');
-  let reservas = archivo.leerDatosJson('reservas.json');
-  if(reservas[idReserva].status==LIBRE){ //CREO QUE ESTO TIENE QUE SER SYNCRONICO
-    msg="TURNO DISPONIBLE. AHORA TE MUESTRO LA VENTANA INTERMEDIA PARA QUE CONFIRMES LA RESERVA."
-    reservas[idReserva].userId=userId;
-    reservas[idReserva].status=BLOQUEADO;
-    //archivo.escribirArchivoJson('./gestion_reservas/reservas.json',reservas); //VER ESTO capaz ambos clientes ven que el userId esta desocupado y entran ambos . VER COMO BLOQUEAR RECURSO. 
-    archivo.escribirArchivoJson('reservas.json',reservas);
-    idTimeOut=setTimeout(function(){
-      let reservas = archivo.leerDatosJson('reservas.json');
-      if(reservas[idReserva].status==BLOQUEADO){
-        reservas[idReserva].status=LIBRE
-        console.log("Se te expiro el tiempo logiii")
-       // archivo.escribirArchivoJson('./gestion_reservas/reservas.json',reservas);
-        archivo.escribirArchivoJson('reservas.json',reservas);
-      }
-    },15000);
-  }
-  else
-    msg="EL TURNO YA SE ENCUENTRA OCUPADO."
-  
-  return msg
+async function verificaTurno(idReserva,userId){
+
+    console.log("Pido el lock verificacion");
+    const unlock = await mutexReservas.lock();
+    //let reservas = archivo.leerDatosJson('./gestion_reservas/reservas.json');
+    let reservas = archivo.leerDatosJson('reservas.json');
+    if(reservas[idReserva].status==LIBRE){ //CREO QUE ESTO TIENE QUE SER SYNCRONICO
+      msg="TURNO DISPONIBLE. AHORA TE MUESTRO LA VENTANA INTERMEDIA PARA QUE CONFIRMES LA RESERVA."
+      reservas[idReserva].userId=userId;
+      reservas[idReserva].status=BLOQUEADO;
+      //archivo.escribirArchivoJson('./gestion_reservas/reservas.json',reservas); //VER ESTO capaz ambos clientes ven que el userId esta desocupado y entran ambos . VER COMO BLOQUEAR RECURSO. 
+      archivo.escribirArchivoJson('reservas.json',reservas);
+      idTimeOut=setTimeout(function(){
+        let newReservas = archivo.leerDatosJson('reservas.json');
+        if(newReservas[idReserva].status==BLOQUEADO){
+          newReservas[idReserva].status=LIBRE
+          console.log("Se te expiro el tiempo logiii")
+         // archivo.escribirArchivoJson('./gestion_reservas/reservas.json',reservas);
+          archivo.escribirArchivoJson('reservas.json',reservas);
+        }
+      },10000);
+    }
+    else
+      msg="EL TURNO YA SE ENCUENTRA OCUPADO."
+    console.log("Liberando lock verificacion");
+    unlock();
+    return msg
 }
 
 
@@ -155,3 +168,22 @@ function modificacion(datos)
 {
   sol = JSON.parse(datos)
 }
+
+function Mutex() {
+  let current = Promise.resolve();
+  this.lock = () => {
+      let _resolve;
+      const p = new Promise(resolve => {
+          _resolve = () => resolve();
+      });
+      // Caller gets a promise that resolves when the current outstanding
+      // lock resolves
+      const rv = current.then(() => _resolve);
+      // Don't allow the next request until the new promise is done
+      current = p;
+      // Return the new promise
+      return rv;
+  };
+}
+
+const delay = (ms, value) => new Promise(resolve => setTimeout(resolve, ms, value));

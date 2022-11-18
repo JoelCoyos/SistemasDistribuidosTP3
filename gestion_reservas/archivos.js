@@ -3,7 +3,7 @@ const fs = require('fs')
 function escribirArchivoJson(nombre,datos)
 {
     datosJson = JSON.stringify(datos);
-    fs.writeFile(nombre,datosJson,(err) =>{
+    fs.writeFileSync(nombre,datosJson,(err) =>{
         if (err) return "todo mal"
     })
 }
