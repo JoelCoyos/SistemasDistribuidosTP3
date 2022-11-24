@@ -2,7 +2,7 @@ const fs = require('fs');
 const nombres = require('fake-people');
 const fakePeople = require('fake-people');
 
-let sucursales = [1];
+let sucursales = [1,2,3,4,5,6,7];
 const rand = max => Math.floor(Math.random() * max);
 
 class Turno {

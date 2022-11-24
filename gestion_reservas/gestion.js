@@ -38,18 +38,18 @@ http.createServer((request, response) =>  {
     {
       if(request.url.match(/\/api\/reservas\/confirmar\/\w+/))
       {
-        console.log("alta");
         const idTurno = request.url.split('/')[4];
-        msg = alta(idTurno,JSON.parse(body));
+        exito = alta(idTurno,JSON.parse(body));
+        if(!exito)
+          response.writeHead(400,"El turno ya esta ocupado");
       }
       else if(request.url.match(/\/api\/reservas\/solicitar\/[0,1,2,3,4,5,6,7,8,9]+/)){
         idReserva=request.url.split('/')[4]
         bodyParsed = JSON.parse(body);
-        console.log(bodyParsed);
         userId = JSON.parse(body).userId
-        console.log("idReserva: "+idReserva+"\nuserId: "+userId)
-        msg= await verificaTurno(idReserva,userId)
-        console.log("Salgo del verificar turno");
+        exito= await verificaTurno(idReserva,userId)
+        if(!exito)
+          response.writeHead(400,"El turno no se pudo dar de alta");
 
       }
     }
@@ -60,18 +60,6 @@ http.createServer((request, response) =>  {
         let query = urlParse.parse(request.url,true).query;
         msg = getTurnos(query.userId,query.dateTime,query.branchId);
       }
-      else if(request.url.match(/\/api\/reserva\/\w+/)) //Get reserva
-      {
-        msg = '';
-      }
-    }
-    else if(request.method === 'PUT')
-    {
-
-    }
-    else if(request.method === 'DELETE')
-    {
-
     }
     response.end(JSON.stringify(msg));
   });
@@ -98,7 +86,8 @@ async function alta(idReserva,newReserva)
   //let reservas = archivo.leerDatosJson('./gestion_reservas/reservas.json');
   console.log("Pido el lock alta");
   const unlock = await mutexReservas.lock();
-  let msg ="";
+  console.log("Obtuve lock alta");
+  let exito;
   let reservas = archivo.leerDatosJson('reservas.json');
   if(reservas[idReserva].status==BLOQUEADO && reservas[idReserva].userId==newReserva.userId)
   {
@@ -111,44 +100,47 @@ async function alta(idReserva,newReserva)
     //archivo.escribirArchivoJson('./gestion_reservas/reservas.json',reservas);
     archivo.escribirArchivoJson('reservas.json',reservas);
     enviaMail(newReserva.email,"Registro de turno","<p>Hola te has registrado correctamente <strong>verso en negrita</strong>, <strong>otro verso. Integrar una plantilla</strong></p>");
-    msg ="todo bien"
+    exito = true;
   }
   else
   {
-    msg = "ya esta ocupado"
+    exito = false;
   }
   console.log("Liberando lock verificacion");
   unlock();
-  return msg;
+  return exito;
 }
 
 async function verificaTurno(idReserva,userId){
-
+    let exito;
     console.log("Pido el lock verificacion");
     const unlock = await mutexReservas.lock();
+    console.log("Obtuve lock verificacion");
     //let reservas = archivo.leerDatosJson('./gestion_reservas/reservas.json');
     let reservas = archivo.leerDatosJson('reservas.json');
     if(reservas[idReserva].status==LIBRE){ //CREO QUE ESTO TIENE QUE SER SYNCRONICO
-      msg="TURNO DISPONIBLE. AHORA TE MUESTRO LA VENTANA INTERMEDIA PARA QUE CONFIRMES LA RESERVA."
       reservas[idReserva].userId=userId;
       reservas[idReserva].status=BLOQUEADO;
       //archivo.escribirArchivoJson('./gestion_reservas/reservas.json',reservas); //VER ESTO capaz ambos clientes ven que el userId esta desocupado y entran ambos . VER COMO BLOQUEAR RECURSO. 
       archivo.escribirArchivoJson('reservas.json',reservas);
+      exito = true;
       idTimeOut=setTimeout(function(){
         let newReservas = archivo.leerDatosJson('reservas.json');
         if(newReservas[idReserva].status==BLOQUEADO){
           newReservas[idReserva].status=LIBRE
-          console.log("Se te expiro el tiempo logiii")
+          console.log("Se te expiro el tiempo")
          // archivo.escribirArchivoJson('./gestion_reservas/reservas.json',reservas);
           archivo.escribirArchivoJson('reservas.json',reservas);
         }
       },10000);
     }
     else
-      msg="EL TURNO YA SE ENCUENTRA OCUPADO."
+    {
+      exito = false;
+    }
     console.log("Liberando lock verificacion");
     unlock();
-    return msg
+    return exito;
 }
 
 function enviaMail(to,subject,value){
@@ -174,11 +166,12 @@ function enviaMail(to,subject,value){
     });
     res.on('end', () => {
       if(res.statusCode == 200)
-        //console.log(JSON.parse(body))
-        console.log("HOLA")
+      {
+        //console.log('Se envio el mail correctamente');
+      }
       else{
-        console.log(res.statusCode)
-        console.log(body)
+        //console.log(res.statusCode)
+        //console.log(body)
       }
 
     });
@@ -188,17 +181,6 @@ function enviaMail(to,subject,value){
   req.end();  
 }
 
-//Agustin
-function baja(datos) 
-{
-  sol = JSON.parse(datos)
-}
-
-//Joel
-function modificacion(datos) 
-{
-  sol = JSON.parse(datos)
-}
 
 function Mutex() {
   let current = Promise.resolve();

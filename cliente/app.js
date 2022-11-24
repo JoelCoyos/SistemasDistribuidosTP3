@@ -80,7 +80,7 @@ var app = new function () {
   
         })
         .catch((error) => {
-            alert("El turno no se ha podido reservar" + error);    
+            alert("El turno no se ha podido reservar");    
         });
 
 
@@ -91,7 +91,7 @@ var app = new function () {
 function altaTurno(idReserva)
 {
     var url = 'http://localhost:8080/api/reservas/confirmar/' + idReserva;
-    if(email.document.getElementById('email').value == '')
+    if(document.getElementById('email').value == '')
     {
         alert("Ingrese un email");
         return;
