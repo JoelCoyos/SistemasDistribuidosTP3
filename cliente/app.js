@@ -91,6 +91,11 @@ var app = new function () {
 function altaTurno(idReserva)
 {
     var url = 'http://localhost:8080/api/reservas/confirmar/' + idReserva;
+    if(email.document.getElementById('email').value == '')
+    {
+        alert("Ingrese un email");
+        return;
+    }
     const bodyRequest = {
         userId:'0',
         email:document.getElementById('email').value
@@ -102,7 +107,7 @@ function altaTurno(idReserva)
     })
     .then((response) => {
         if (!response.ok) {
-            throw new Error(JSON.parse(response.body).msg);   
+            alert("No se pudo reservar el turno");
         }
         alert("El turno se ha reservado con exito");  
     })

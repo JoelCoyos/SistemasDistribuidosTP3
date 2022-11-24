@@ -120,10 +120,7 @@ async function alta(idReserva,newReserva)
   console.log("Liberando lock verificacion");
   unlock();
   return msg;
-
 }
-
-
 
 async function verificaTurno(idReserva,userId){
 
@@ -190,7 +187,6 @@ function enviaMail(to,subject,value){
   req.write(JSON.stringify(data))
   req.end();  
 }
-
 
 //Agustin
 function baja(datos) 
