@@ -122,6 +122,7 @@ function mostrarSucursales()
     })
     .then((sucursales) => {
         if (sucursales.length > 0) {
+            generaMapa(sucursales)
             var data='<option value="-1">Cualquiera</option>'
             for (i = 0; i < sucursales.length; i++) {
                 var nombre = sucursales[i].name;
@@ -135,5 +136,123 @@ function mostrarSucursales()
        alert(error);
     });
 }
+
+function generaMapa(sucursales) {  //Genera un mapa usando la API
+    
+    var data = JSON.stringify({
+      title : "Hospitales",
+      slug: "",
+      description: "Mapa que muestra diversos hospitales de la ciudad de mar del plata",
+      privacy : "unlisted",
+      users_can_create_markers : "yes"})
+
+      fetch('https://cartes.io/api/maps',{
+        method:"POST",
+        headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin':'*', 'Access-Control-Allow-Headers': 'content-type' ,'Access-Control-Allow-Credentials': 'true'},
+        mode : 'cors',
+        body: data
+    })
+    .then((response) => {
+        if (!response.ok) {
+            throw new Error(JSON.parse(response.body).msg);
+        } else {
+          console.log("funciona pa")
+        }
+        
+
+    })
+
+    
+
+    
+    
+    /*
+    var options = {
+        hostname: 'cartes.io',
+        path: '/api/maps',
+        method: 'POST',
+        timeout: 5000,
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': data.length
+        }
+    }*/
+  /*
+    const req = https.request(options, res => {
+      res.setEncoding('utf8');
+      
+      let body = [];
+      
+      res.on('data', (chunk) => {
+        //process.stdout.write(chunk)
+        body.push(chunk);
+      });
+      
+      res.on('end', () => { 
+        
+        aux = (body[0]).split("'")
+        mapaGen = aux[1]
+        aux = mapaGen.split("/")
+        ruta = options.path+"/"+aux[4]+"/markers"
+        //console.log("Link del mapa generado: https://app.cartes.io/maps/"+aux[4])
+        link = "https://app.cartes.io/maps/"+aux[4]
+        generaMarkers(sucursales, ruta)
+      });
+  
+      req.on('error', err =>{
+      })
+      
+    });
+    req.write(data)
+    req.end()*/
+  };
+  
+  async function generaMarkers(sucursales, ruta) { //Genera markers en el mapa pasado por parametro
+    const https = require('https')
+
+    for(let i=0;i<sucursales.length;i++){
+      await sleep(200)
+      var data = JSON.stringify({
+        lat : sucursales[i].lat,
+        lng: sucursales[i].lng,
+        category_name : sucursales[i].name})
+      
+      var options = {
+        hostname: 'cartes.io',
+        path: ruta,
+        method: 'POST',
+        timeout: 5000,
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': data.length
+        }
+      }
+      
+      var req = https.request(options, (res) => {
+        res.setEncoding('utf8');
+        
+        let body = [];
+        
+        res.on('data', (chunk) => {
+          body.push(chunk);
+        });
+        
+        res.on('end', () => {
+          //console.log(res.statusCode)
+        });
+    
+        req.on('error', () =>{
+          //console.log(error.message)
+        })
+    
+        
+      });
+      //console.log(data)
+      req.write(data)
+      req.end()
+    }
+    
+    
+  };
 
 mostrarSucursales();
