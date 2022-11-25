@@ -32,7 +32,7 @@ var app = new function () {
                 var sucursal = reservas[i].branchId;
                 var dateTime = new Date(fecha);
                 data += '<tr>';
-                data += '<td id='+reservas[i].idTurno+'>' +dateTime.toLocaleTimeString() +'</td> <td id='+reservas[i].idTurno+'>' + nombres[sucursal]+'</td>';
+                data += '<td id='+'' +reservas[i].idReserva+'>'+dateTime.toLocaleTimeString() +'</td> <td id='+reservas[i].idReserva+'>' + nombres[sucursal-1]+'</td>';
                 data +='<td><div class="checkbox-wrapper-15">'+
                 '<input class="inp-cbx" id="cbx-'+i+'" type="checkbox" style="display: none;" onclick="onlyOne(this)" name="check-turno" value="'+reservas[i].idReserva+'"/>'+
                 '<label class="cbx" for="cbx-'+i+'">'+
@@ -61,7 +61,7 @@ var app = new function () {
 
     this.verificar = function()
     {
-        var turnos = document.getElementsByName('turno');
+        var turnos = document.getElementsByName('check-turno');
         let idReserva;
         for(i=0; i< turnos.length;i++)
         {
@@ -70,6 +70,7 @@ var app = new function () {
                 idReserva = turnos[i].value;
             }
         }
+        console.log(idReserva);
         var url = 'http://localhost:8080/api/reservas/solicitar/' + idReserva;
         const bodyRequest = {
             userId:'0'
@@ -125,10 +126,12 @@ function altaTurno(idReserva)
         body:JSON.stringify(bodyRequest)
     })
     .then((response) => {
-        if (!response.ok) {
+        if (response.status==400) {
             alert("No se pudo reservar el turno");
         }
-        alert("El turno se ha reservado con exito");  
+        {
+            alert("El turno se ha reservado con exito");  
+        }
     })
 }
 

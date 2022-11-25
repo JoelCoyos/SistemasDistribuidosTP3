@@ -49,15 +49,13 @@ function popularTurnosMes(mes,horaInicio,horaFin,duracionTurno)
         {
             for(let i =horaInicio;i<=horaFin;i+=duracionTurno)
             {
-                if(rand(2)==1)
-                {
                     turnos.push(new Turno(count,new Date(2022,mes,j,i),-1,null,sucursal,0));
-                }
-                else
+
+                /*else
                 {
                     let personaRandom = fakePeople.generate();
                     turnos.push(new Turno(count,new Date(2022,mes,j,i),0,personaRandom.contacts.email,sucursal,2));
-                }
+                }*/
                 count++;
             }
         }

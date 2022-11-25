@@ -1,10 +1,10 @@
 cd ./gateway
 node gateway.js &
 cd ../gestion_reservas
-node gestion.js &
+node gestion_reservas.js &
 cd ../gestion_sucursales 
-node sucursales.js &
+node gestion_sucursales.js &
 cd ../gestion_notificaciones
-node gestionNotificaciones.js &
+node gestion_notificaciones.js &
 cd ../gestion_recordatorios
-node gestionRecordatorios.js
+node gestion_recordatorios.js

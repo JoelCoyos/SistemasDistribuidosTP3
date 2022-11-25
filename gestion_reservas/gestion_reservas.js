@@ -39,9 +39,12 @@ http.createServer((request, response) =>  {
       if(request.url.match(/\/api\/reservas\/confirmar\/\w+/))
       {
         const idTurno = request.url.split('/')[4];
-        exito = alta(idTurno,JSON.parse(body));
+        let exito = await alta(idTurno,JSON.parse(body));
         if(!exito)
+        {
+          console.log("escribiendo el error");
           response.writeHead(400,"El turno ya esta ocupado");
+        }
       }
       else if(request.url.match(/\/api\/reservas\/solicitar\/[0,1,2,3,4,5,6,7,8,9]+/)){
         idReserva=request.url.split('/')[4]
@@ -75,7 +78,8 @@ function getTurnos(userId,dateTime,branchId)
     ( 
       (userId  == undefined  || turno.userId    == userId)  && 
       (dateTime     == undefined || new Date(turno.dateTime).toISOString().split('T')[0] == new Date(dateTime).toISOString().split('T')[0] )  && 
-      (branchId == undefined || turno.branchId  == branchId)
+      (branchId == undefined || turno.branchId  == branchId) && 
+      (turno.status == 0)
     )
   )
   return turnos;
@@ -92,7 +96,6 @@ async function alta(idReserva,newReserva)
   if(reservas[idReserva].status==BLOQUEADO && reservas[idReserva].userId==newReserva.userId)
   {
     let reserva = reservas[idReserva];
-
     reserva.userId = newReserva.userId;
     reserva.email = newReserva.email;
     reserva.status = RESERVADO
@@ -101,9 +104,11 @@ async function alta(idReserva,newReserva)
     archivo.escribirArchivoJson('reservas.json',reservas);
     enviaMail(newReserva.email,"Registro de turno","<p>Hola te has registrado correctamente</p>");
     msg ="todo bien"
+    exito=true;
   }
   else
   {
+    console.log("no se pudo reservar");
     exito = false;
   }
   console.log("Liberando lock verificacion");
@@ -128,11 +133,12 @@ async function verificaTurno(idReserva,userId){
         let newReservas = archivo.leerDatosJson('reservas.json');
         if(newReservas[idReserva].status==BLOQUEADO){
           newReservas[idReserva].status=LIBRE
+          newReservas[idReserva].userId=-1;
           console.log("Se te expiro el tiempo")
          // archivo.escribirArchivoJson('./gestion_reservas/reservas.json',reservas);
-          archivo.escribirArchivoJson('reservas.json',reservas);
+          archivo.escribirArchivoJson('reservas.json',newReservas);
         }
-      },10000);
+      },5000);
     }
     else
     {
@@ -153,7 +159,7 @@ function enviaMail(to,subject,value){
   const options = 
   {
       hostname: 'localhost',
-      port: 8083,
+      port: 8089,
       path:'/api/notificacion',
       method:'POST',
   };

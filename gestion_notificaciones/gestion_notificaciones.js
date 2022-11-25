@@ -7,7 +7,7 @@ var options = {
     path: '/v3/mail/send',
     method: 'POST',
     headers: {
-        'Authorization':'API KEY',
+        'Authorization':'Bearer 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',
         'Content-Type': 'application/json',
     }
 }

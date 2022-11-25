@@ -18,7 +18,7 @@ setInterval(function() {
         }
     }
     
-},5000);
+},3600000);
 
 
 

@@ -204,12 +204,17 @@ body {
 
 .wrapper
 {
+  width:fit-content;
   overflow: hidden;
+  margin:auto;
+  text-align: center;
 }
 
 .primero
 {
   float:left;
+  margin-top: 5px;
+  text-align: center;
 }
 
 .box {
