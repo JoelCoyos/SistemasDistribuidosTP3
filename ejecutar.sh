@@ -5,4 +5,6 @@ node gestion.js &
 cd ../gestion_sucursales 
 node sucursales.js &
 cd ../gestion_notificaciones
-node gestionNotificaciones.js
+node gestionNotificaciones.js &
+cd ../gestion_recordatorios
+node gestionRecordatorios.js
