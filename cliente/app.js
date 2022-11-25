@@ -4,7 +4,7 @@ var nombres = []
 var app = new function () {
     this.mostrarReservas =  function()
     {
-        if(document.getElementById('fecha_consultar'.value)==null)
+        if(document.getElementById('fecha_consultar').value==null)
             alert('Ingrese una fecha');
         let fecha_consultar =new Date(document.getElementById('fecha_consultar').value).toISOString();
         let sucursal_consultar = document.getElementById('select-sucursal').value;
@@ -22,27 +22,37 @@ var app = new function () {
             return response.json();
         })
         .then((reservas) => {
-            var data = '<br>';
             if (reservas.length > 0) {
-              var data = '<br>';
+              var data = '';
               fechaAux = new Date(reservas[0].dateTime)
-              data+='<h2> Fecha: ' + fechaAux.toLocaleDateString()+' </h2>'
-              data+='<table class="centered"><thead><tr><th>Horario</th><th>Sucursal</th><th> </th></tr></thead><tbody>'
+              //data+='<h2> Fecha: ' + fechaAux.toLocaleDateString()+' </h2>'
+              //data+='<table class="centered"><thead><tr><th>Horario</th><th>Sucursal</th><th> </th></tr></thead><tbody>'
               for (i = 0; i < reservas.length; i++) {
                 var fecha = reservas[i].dateTime;
                 var sucursal = reservas[i].branchId;
                 var dateTime = new Date(fecha);
                 data += '<tr>';
-                data += '<td id='+reservas[i].idTurno+'>' +dateTime.toLocaleTimeString() +'</td> <td id='+reservas[i].idTurno+'>' + nombres[sucursal] +  '</td> <td id='+reservas[i].idTurno+'></td> '
-                data += '<td><input type="radio" name="turno" value="'+reservas[i].idReserva+'"></td>';
+                data += '<td id='+reservas[i].idTurno+'>' +dateTime.toLocaleTimeString() +'</td> <td id='+reservas[i].idTurno+'>' + nombres[sucursal]+'</td>';
+                data +='<td><div class="checkbox-wrapper-15">'+
+                '<input class="inp-cbx" id="cbx-'+i+'" type="checkbox" style="display: none;" onclick="onlyOne(this)" name="check-turno" value="'+reservas[i].idReserva+'"/>'+
+                '<label class="cbx" for="cbx-'+i+'">'+
+                    '<span>'+
+                    '<svg width="12px" height="9px" viewbox="0 0 12 9">'+
+                        '<polyline points="1 5 4 8 11 1"></polyline>'+
+                    '</svg>'+
+                    '</span>'+
+                    '<span></span>'+
+                '</label>'+
+                '</div></td>';
                 data += '</tr>';
               }
-              data+='</tbody></table>'
             }
-            data+='<h3>Email:<input type="text" id="email" name="email"><br><br></h3>'
-            data+='<button onclick="app.verificar();">Reservar</button>'
-            document.getElementById('reservas').innerHTML = data;
-            document.getElementById('reservas').style.display = 'block';
+            let dataBotones='<h3 class>Email:<input type="text" id="email" name="email"><br><br></h3>'
+            dataBotones+='<button class="button-17" role="button" onclick="app.verificar();">Reservar</button>'
+            dataBotones+='<p></p>'
+            document.getElementById('reservas').innerHTML= data;
+            document.getElementById('tabla-reservas').style.display = 'table';
+            document.getElementById('botones-reservar').innerHTML=dataBotones;
         })
         .catch((error) => {
            alert(error);
@@ -202,3 +212,10 @@ function generaMapa(sucursales) {  //Genera un mapa usando la API
   };
 
 mostrarSucursales();
+
+function onlyOne(checkbox) {
+    var checkboxes = document.getElementsByName('check-turno')
+    checkboxes.forEach((item) => {
+        if (item !== checkbox) item.checked = false
+    })
+}
