@@ -15,11 +15,21 @@
         <a>Sucursal a consultar</a>
         <select name="Seleccionar Sucursal" id="select-sucursal"></select>
     </h3>
-    <button onclick="app.mostrarReservas();">Consultar</button>
-    <table>
-        <tbody id="reservas"></tbody>
+    <button class="button-17" role="button" onclick="app.mostrarReservas();">Consultar</button>
+    <table id ="tabla-reservas">
+        <thead>
+            <tr>
+                <th>Horario</th>
+                <th>Sucursal</th>
+                <th>Reservar</th>
+            </tr>
+         </thead>
+         <tbody id="reservas">
+        </tbody>
     </table>
+    <div class ="botones" id="botones-reservar">
     <p></p>
+    </div>
     <iframe id="mapa"
     width="100%"
     height="600"
