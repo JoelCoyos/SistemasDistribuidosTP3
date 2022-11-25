@@ -10,10 +10,16 @@
 <body>
     <h1>Sistema de reservas</h1>
     <h3>
-        <a>Consultar Reservas</a>
-        <input type="date" id="fecha_consultar">
-        <a>Sucursal a consultar</a>
-        <select name="Seleccionar Sucursal" id="select-sucursal"></select>
+        <div class = "wrapper">
+        <div class ="primero">
+            <a>Consultar Reservas</a>
+            <input type="date" id="fecha_consultar">
+            <a>Sucursal a consultar</a>
+        </div>
+        <div class='box'>
+            <select name="Seleccionar Sucursal" id="select-sucursal"></select>
+        </div>
+        </div>
     </h3>
     <button class="button-17" role="button" onclick="app.mostrarReservas();">Consultar</button>
     <table id ="tabla-reservas">
