@@ -1,17 +1,23 @@
 //  mapa -->  "https://app.cartes.io/maps/986cfcf5-1956-4255-91fa-ae5299e460d5"
 // En ese mapa podemos cargar a mano los markers que queramos, es unicamente para levantarlo y meterlo en el archivo JSON
 
-const API = "https://cartes.io/api/maps"
-const mapa = "/986cfcf5-1956-4255-91fa-ae5299e460d5"
-
-const linkMarkers = `${API}${mapa}/markers`
-
 const { error } = require('console')
 const https = require('https')
+const { resolve } = require('path')
 const archivo = require('../archivos')
 
-const PORT = 8080
+var link = ""
 var sucursales = []
+
+const sleep = async (milisegundos) => {
+  await new Promise(resolve => {
+    return setTimeout(resolve,milisegundos);
+  })
+}
+
+const muestraLink = function(){
+  console.log(link)
+}
 
 const levantaMapaExistente = function(link){
   https.get(link, res => {
@@ -42,12 +48,12 @@ const levantaMapaExistente = function(link){
   }).on('error', error => console.error(error.message))
 }
 
-const generaMapa = function(sucursales,titulo,descripcion) {  //Genera un mapa usando la API
-  
+const generaMapa = function(sucursales) {  //Genera un mapa usando la API
+
   var data = JSON.stringify({
-    title : titulo,
+    title : "Hospitales",
     slug: "",
-    description: descripcion,
+    description: "Mapa que muestra diversos hospitales de la ciudad de mar del plata",
     privacy : "unlisted",
     //users_can_create_markers : "only_logged_in"
     users_can_create_markers : "yes"})
@@ -78,7 +84,7 @@ const generaMapa = function(sucursales,titulo,descripcion) {  //Genera un mapa u
       //console.log(res.statusCode)
       //console.log(body)
       //console.log(JSON.parse(body))   <--- no baila      
-      
+      console.log(body)
       aux = (body[0]).split("'")
       mapaGen = aux[1]
       aux = mapaGen.split("/")
@@ -86,9 +92,9 @@ const generaMapa = function(sucursales,titulo,descripcion) {  //Genera un mapa u
       console.log("=============================================================================================")
       console.log("Map id: " + aux[4])
       console.log("Link del mapa generado: https://app.cartes.io/maps/"+aux[4])
+      link = "https://app.cartes.io/maps/"+aux[4]
       console.log("=============================================================================================")
       generaMarkers(sucursales, ruta)
-
     });
 
     req.on('error', err =>{
@@ -102,10 +108,10 @@ const generaMapa = function(sucursales,titulo,descripcion) {  //Genera un mapa u
 
 };
 
-const generaMarkers = function(sucursales, ruta) { //Genera markers en el mapa pasado por parametro
+const generaMarkers = async function(sucursales, ruta) { //Genera markers en el mapa pasado por parametro
   
   for(let i=0;i<sucursales.length;i++){
-    
+    await sleep(200)
     var data = JSON.stringify({
       lat : sucursales[i].lat,
       lng: sucursales[i].lng,
@@ -146,15 +152,15 @@ const generaMarkers = function(sucursales, ruta) { //Genera markers en el mapa p
     req.end()
   }
   
+  //muestraLink()
 };
 
 const magia = async function() {
 
-
-  await levantaMapaExistente(linkMarkers)
-  //escucha()
-  //await generaMapa(archivo.leerDatosJson("sucursales.json"),"Mapa Sucursales2","hola breo")
-
+  let linkMapaExistente = "https://cartes.io/api/maps/986cfcf5-1956-4255-91fa-ae5299e460d5/markers"
+  await levantaMapaExistente(linkMapaExistente)
+  //console.log("esto no tiene que aparecer")
+  //generaMapa(archivo.leerDatosJson("../gestion_sucursales/sucursales.json"))
 }
 
 magia()

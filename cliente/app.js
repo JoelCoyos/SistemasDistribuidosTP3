@@ -1,4 +1,6 @@
 
+var nombres = []
+
 var app = new function () {
     this.mostrarReservas =  function()
     {
@@ -22,15 +24,20 @@ var app = new function () {
         .then((reservas) => {
             var data = '<br>';
             if (reservas.length > 0) {
+              var data = '<br>';
+              fechaAux = new Date(reservas[0].dateTime)
+              data+='<h2> Fecha: ' + fechaAux.toLocaleDateString()+' </h2>'
+              data+='<table class="centered"><thead><tr><th>Horario</th><th>Sucursal</th><th> </th></tr></thead><tbody>'
               for (i = 0; i < reservas.length; i++) {
                 var fecha = reservas[i].dateTime;
                 var sucursal = reservas[i].branchId;
                 var dateTime = new Date(fecha);
                 data += '<tr>';
-                data += '<td id='+reservas[i].idTurno+'>Fecha: ' + dateTime.toLocaleDateString() + ' Horario: '+ dateTime.toLocaleTimeString() +' Sucursal: ' + sucursal +  '</td>'
+                data += '<td id='+reservas[i].idTurno+'>' +dateTime.toLocaleTimeString() +'</td> <td id='+reservas[i].idTurno+'>' + nombres[sucursal] +  '</td> <td id='+reservas[i].idTurno+'></td> '
                 data += '<td><input type="radio" name="turno" value="'+reservas[i].idReserva+'"></td>';
                 data += '</tr>';
               }
+              data+='</tbody></table>'
             }
             data+='<h3>Email:<input type="text" id="email" name="email"><br><br></h3>'
             data+='<button onclick="app.verificar();">Reservar</button>'
@@ -129,11 +136,14 @@ function mostrarSucursales()
     })
     .then((sucursales) => {
         if (sucursales.length > 0) {
+            generaMapa(sucursales)
             var data='<option value="-1">Cualquiera</option>'
             for (i = 0; i < sucursales.length; i++) {
                 var nombre = sucursales[i].name;
+                nombres[i] = nombre;
                 var id = sucursales[i].branchId;
-                data +='<option value="'+id+'">'+nombre+'</option>'
+                let aux = i+1
+                data +='<option value="'+id+'">'+nombre +" (Sucursal "+ aux +")"+'</option>'
             }
             document.getElementById('select-sucursal').innerHTML = data;
         }
@@ -142,5 +152,53 @@ function mostrarSucursales()
        alert(error);
     });
 }
+
+function generaMapa(sucursales) {  //Genera un mapa usando la API
+    
+  var data = JSON.stringify({
+    title : "Hospitales",
+    slug: "",
+    description: "Mapa que muestra diversos hospitales de la ciudad de mar del plata",
+    privacy : "unlisted",
+    users_can_create_markers : "yes"})
+
+  fetch('https://cartes.io/api/maps',{
+    method:"POST",
+    headers: {'Access-Control-Allow-Origin':'*','Accept': 'application/json','Content-Type': 'application/json','Content-Length': data.length},
+    mode : 'cors',
+    body: data
+  }).then((response) => {
+    if (!response.ok) throw new Error(JSON.parse(response.body).msg);
+    return response.json();
+  }).then(data => {
+    console.log("Link del mapa: https://app.cartes.io/maps/"+data.slug)
+    generaMarkers(sucursales,data.slug)
+  })
+
+};
+  
+  async function generaMarkers(sucursales, mapId) { //Genera markers en el mapa pasado por parametro
+    
+    
+    for(let i = 0; i<sucursales.length; i++){
+      
+      var data = JSON.stringify({
+        lat : sucursales[i].lat,
+        lng: sucursales[i].lng,
+        category_name : sucursales[i].name})
+      
+      ruta = "https://cartes.io/api/maps/" + mapId + "/markers"
+      fetch(ruta,{
+        method: 'POST',
+        headers: {'Access-Control-Allow-Origin':'*','Accept': 'application/json','Content-Type': 'application/json','Content-Length': data.length},
+        mode : 'cors',
+        body: data
+      }).then((response) => {
+        if (!response.ok) throw new Error(JSON.parse(response.body).msg);
+      })
+    }
+    var elementVar = document.getElementById("mapa");
+    elementVar.setAttribute("src", "https://app.cartes.io/maps/" + mapId +"/embed?type=map&lat=-38.001540813477845&lng=-57.539949417114265&zoom=13"); 
+  };
 
 mostrarSucursales();

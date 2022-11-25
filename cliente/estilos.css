@@ -1,0 +1,17 @@
+
+head {
+    text-align: center;
+    font-size:larger;
+}
+
+body {
+    text-align: center;
+    font-size:larger;
+    margin: 0;
+    background:hsl(83, 100%, 60%);
+    color:rgb(0, 0, 0);
+    font-family: 'Montserrat', sans-serif;
+    height:100vh;
+
+    
+}
