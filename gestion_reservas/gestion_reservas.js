@@ -42,7 +42,6 @@ http.createServer((request, response) =>  {
         let exito = await alta(idTurno,JSON.parse(body));
         if(!exito)
         {
-          console.log("escribiendo el error");
           response.writeHead(400,"El turno ya esta ocupado");
         }
       }

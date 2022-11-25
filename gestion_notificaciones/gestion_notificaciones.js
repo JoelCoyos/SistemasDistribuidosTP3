@@ -90,7 +90,7 @@ function enviarMail(destinatario,asunto,cuerpo){
           body.push(chunk);
         });
         res.on('end', () => {
-          console.log(body.toString());
+          
         });
     });
     

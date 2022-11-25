@@ -15,7 +15,6 @@ var app = new function () {
             method:'GET',
         })
         .then((response) => {
-            console.log(response);
             if (!response.ok) {
                 throw new Error("HTTP status " + response.status);
             }
@@ -70,7 +69,6 @@ var app = new function () {
                 idReserva = turnos[i].value;
             }
         }
-        console.log(idReserva);
         var url = 'http://localhost:8080/api/reservas/solicitar/' + idReserva;
         const bodyRequest = {
             userId:'0'

@@ -8,9 +8,6 @@ setInterval(function() {
     for(i=0;i<reservas.length;i++) {
         
         if(cantHorasDiferencia(reservas[i].dateTime)==24 && reservas[i].status==2){ //manda el recordatorio reservas[i].dateTime - fechaAcutal < 1 dia
-            console.log("AAAAAAAAAAAAAAAAAAAAAA")
-            console.log(reservas[i].email)
-
             var fechaReserva = new Date(reservas[i].dateTime)
             fechaReserva.toLocaleDateString()
             
@@ -29,32 +26,14 @@ setInterval(function() {
 //1 minuto = 60.000
 
 function cantHorasDiferencia(fechaTurno){
-
-
-
     var today = new Date();
     today.toISOString()
 
-    //console.log(fechaTurno)
     var fechaReserva = new Date(fechaTurno)
     fechaReserva.toISOString()
 
-
-    //console.log(today)
-    //console.log(fechaReserva)
-
-
-    //fechaReserva.setHours(fechaReserva.getHours())
-    //console.log(fechaReserva.getHours())
-
-
     diferencia = Math.abs(fechaReserva.getTime()-today.getTime());
     let horasDiferencia = (diferencia / 3600000) + 3
-    if(fechaTurno=="2022-11-25T22:26:00.000Z"){
-      console.log(today.getTime())
-      console.log(fechaReserva)
-      console.log(Math.ceil(horasDiferencia))
-    }
     return Math.ceil(horasDiferencia)
 }
 
@@ -83,11 +62,11 @@ function enviaMail(to,subject,value){
       });
       res.on('end', () => {
         if(res.statusCode == 200)
+        {
           //console.log(JSON.parse(body))
-          console.log("HOLA")
+        }
         else{
-          console.log(res.statusCode)
-          console.log(body)
+          
         }
       });
     });
