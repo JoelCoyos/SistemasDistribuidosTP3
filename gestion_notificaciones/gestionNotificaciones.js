@@ -7,7 +7,7 @@ var options = {
     path: '/v3/mail/send',
     method: 'POST',
     headers: {
-        'Authorization':'Bearer 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',
+        'Authorization':'API KEY',
         'Content-Type': 'application/json',
     }
 }
@@ -22,8 +22,17 @@ const mailBody = {
           "email": "spateranahuel@gmail.com",
         }
       ],
+
+      /*"dynamic_template_data":{
+        "user_name":"",
+        "institucion_name":"Hospital Britanico",
+      }*/
     }
+    
   ],
+
+  //"template_id":"d-5e984603748d4ff09b29293a81a01988",
+  
   "from": {
     "email": "trabajoSD@outlook.com",
     
@@ -37,7 +46,7 @@ const mailBody = {
   ],
 }
 
-const PORT = 8083
+const PORT = 8089
 
 
 http.createServer((request, response) =>  {
@@ -87,11 +96,16 @@ function enviarMail(destinatario,asunto,cuerpo){
     
     mailBody.personalizations[0].to[0].email = destinatario;
     mailBody.subject = asunto
-    mailBody.content[0].value= cuerpo
+    mailBody.content[0].value = cuerpo
     req.write(JSON.stringify(mailBody))
     req.end(); 
 }
 
 
+/*
+
+<p style="text-align: center;"><span style="font-size: 16px;">Su registro a {{institucion_name}} ha sido realizado con exito.</span></p>
+
+*/
 
 

@@ -99,8 +99,8 @@ async function alta(idReserva,newReserva)
     reservas[idReserva] = reserva;
     //archivo.escribirArchivoJson('./gestion_reservas/reservas.json',reservas);
     archivo.escribirArchivoJson('reservas.json',reservas);
-    enviaMail(newReserva.email,"Registro de turno","<p>Hola te has registrado correctamente <strong>verso en negrita</strong>, <strong>otro verso. Integrar una plantilla</strong></p>");
-    exito = true;
+    enviaMail(newReserva.email,"Registro de turno","<p>Hola te has registrado correctamente</p>");
+    msg ="todo bien"
   }
   else
   {
