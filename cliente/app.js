@@ -128,7 +128,7 @@ function altaTurno(idReserva)
     .then((response) => {
         if (response.status==400) {
             alert("No se pudo reservar el turno");
-        }
+        } else 
         {
             alert("El turno se ha reservado con exito");  
         }
