@@ -4,8 +4,11 @@ var nombres = []
 var app = new function () {
     this.mostrarReservas =  function()
     {
-        if(document.getElementById('fecha_consultar').value==null)
+        if(document.getElementById('fecha_consultar').value=='')
+        {
             alert('Ingrese una fecha');
+            return;
+        }
         let fecha_consultar =new Date(document.getElementById('fecha_consultar').value).toISOString();
         let sucursal_consultar = document.getElementById('select-sucursal').value;
         var url = new URL("http://localhost:8080/api/reservas/");
