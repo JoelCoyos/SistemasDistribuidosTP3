@@ -103,8 +103,6 @@ var app = new function () {
             alert("El turno no se ha podido reservar");    
         });
 
-
-        
     }
 }
 
@@ -154,7 +152,7 @@ function mostrarSucursales()
             for (i = 0; i < sucursales.length; i++) {
                 var nombre = sucursales[i].name;
                 nombres[i] = nombre;
-                var id = sucursales[i].branchId;
+                var id = sucursales[i].id;
                 let aux = i+1
                 data +='<option value="'+id+'">'+nombre +" (Sucursal "+ aux +")"+'</option>'
             }
