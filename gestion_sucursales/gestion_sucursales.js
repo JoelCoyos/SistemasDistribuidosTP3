@@ -22,11 +22,11 @@ http.createServer((request, response) =>  {
     if(request.method === 'GET' && request.url == '/api/sucursales'){
       msg = JSON.stringify(sucursales)
     }
-    else if(request.method == 'GET' && urlParse.parse(request.url,true).pathname == '/api/sucursales/')
+    else if(request.url.match(/\/api\/sucursales\/\w+/))
     {
-      let query = urlParse.parse(request.url,true).query;  
+      const branchId = request.url.split('/')[3];
       let i = 0
-      while(i<sucursales.length && sucursales[i].branchId != query.branchId) {i++}
+      while(i<sucursales.length && sucursales[i].branchId != branchId) {i++}
       if(i == sucursales.length) {
         msg = "No existe la sucursal"
         response.writeHead(404,msg)
@@ -38,7 +38,6 @@ http.createServer((request, response) =>  {
           name : sucursales[i].name
         }
         msg = JSON.stringify(rta)
-
       }
     } 
     response.end(msg);
