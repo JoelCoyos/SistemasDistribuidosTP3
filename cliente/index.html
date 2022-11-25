@@ -4,6 +4,7 @@
 <head>
     <title>Reservas</title>
     <script src="app.js"></script>
+    <link rel="stylesheet" href="estilos.css">
 </head>
 
 <body>
@@ -14,10 +15,15 @@
         <a>Sucursal a consultar</a>
         <select name="Seleccionar Sucursal" id="select-sucursal"></select>
     </h3>
-    <a class="btn btn-common btn-rm" href="#" onclick="app.mostrarReservas();">Consultar</a>
+    <button onclick="app.mostrarReservas();">Consultar</button>
     <table>
         <tbody id="reservas"></tbody>
     </table>
+    <p></p>
+    <iframe id="mapa"
+    width="100%"
+    height="600"
+    frameborder="0"></iframe>
 
 </body>
 

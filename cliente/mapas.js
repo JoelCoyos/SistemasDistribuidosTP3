@@ -157,10 +157,10 @@ const generaMarkers = async function(sucursales, ruta) { //Genera markers en el 
 
 const magia = async function() {
 
-  //let linkMapaExistente = "https://cartes.io/api/maps/986cfcf5-1956-4255-91fa-ae5299e460d5/markers"
-  //await levantaMapaExistente(linkMapaExistente)
-  console.log("esto no tiene que aparecer")
-  generaMapa(archivo.leerDatosJson("../gestion_sucursales/sucursales.json"))
+  let linkMapaExistente = "https://cartes.io/api/maps/986cfcf5-1956-4255-91fa-ae5299e460d5/markers"
+  await levantaMapaExistente(linkMapaExistente)
+  //console.log("esto no tiene que aparecer")
+  //generaMapa(archivo.leerDatosJson("../gestion_sucursales/sucursales.json"))
 }
 
 magia()
